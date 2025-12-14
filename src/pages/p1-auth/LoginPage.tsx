@@ -15,33 +15,31 @@ export default function LoginPage() {
   // Check if user is already logged in
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []);
 
   useEffect(() => {
     if (authUser && !isCheckingAuth) {
       // Navigate to role-specific dashboard
       const rolePathMap: Record<string, string> = {
-        'ADMIN': '/admin/dashboard',
-        'HEAD_OF_DEPARTMENT': '/hod/dashboard',
-        'TEACHER': '/teacher/dashboard',
-        'STUDENT': '/student/dashboard'
+        ADMIN: "/admin/dashboard",
+        HEAD_OF_DEPARTMENT: "/hod/dashboard",
+        TEACHER: "/teacher/dashboard",
+        STUDENT: "/student/dashboard",
       };
-      const redirectPath = rolePathMap[authUser.role] || '/login';
+      const redirectPath = rolePathMap[authUser.role] || "/login";
       navigate(redirectPath);
     }
   }, [authUser, isCheckingAuth, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await login({ email, password });
-      // Navigation will happen automatically via the useEffect above
-      // because authUser will be updated
-    } catch (error) {
-      console.error('Login error:', error);
-    }
-  };
-
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    await login({ email, password });
+    // No navigate() here → App.tsx will detect authUser change and redirect via "/"
+  } catch (error) {
+    console.error("Login error:", error);
+  }
+};
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

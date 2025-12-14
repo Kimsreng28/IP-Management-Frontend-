@@ -25,7 +25,7 @@ interface LoginData {
 
 interface AuthState {
   authUser: User | null;
-  token: string | null; 
+  token: string | null;
   isLoggingIn: boolean;
   isCheckingAuth: boolean;
   hasCheckedInitialAuth: boolean;
@@ -46,7 +46,16 @@ export const useAuthStore = create<AuthState>()(
       hasCheckedInitialAuth: false,
 
       checkAuth: async () => {
-        if (get().authUser) {
+        const { authUser, token } = get();
+
+        // If no authUser AND no token, we know user is not logged in
+        if (!authUser && !token) {
+          set({ hasCheckedInitialAuth: true, isCheckingAuth: false });
+          return; // Skip API call entirely
+        }
+
+        // If we already have authUser, just mark as checked
+        if (authUser) {
           set({ hasCheckedInitialAuth: true });
           return;
         }
@@ -55,7 +64,6 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const res = await axiosInstance.get("/auth/check");
-
           set({
             authUser: res.data,
             hasCheckedInitialAuth: true,
@@ -70,13 +78,11 @@ export const useAuthStore = create<AuthState>()(
             return;
           }
           console.error("checkAuth failed:", error);
-
           set({
             authUser: null,
             token: null,
             hasCheckedInitialAuth: true,
           });
-
           toast.error("Authentication check failed");
         } finally {
           set({ isCheckingAuth: false });
