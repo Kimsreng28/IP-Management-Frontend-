@@ -448,14 +448,14 @@ export default function AdminStudents() {
                 </div>
               </th>
 
-              {/* English Name */}
+              {/* Latin Name */}
 
               <th
                 className="group px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleSort("name_en")}
               >
                 <div className="flex items-center gap-1">
-                  English Name
+                  Latin Name
                   {/* Hover-only arrow */}
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {filters.sortOrder === "ASC" ? (
