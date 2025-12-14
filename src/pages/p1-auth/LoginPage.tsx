@@ -19,7 +19,15 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (authUser && !isCheckingAuth) {
-      navigate("/dashboard");
+      // Navigate to role-specific dashboard
+      const rolePathMap: Record<string, string> = {
+        'ADMIN': '/admin/dashboard',
+        'HEAD_OF_DEPARTMENT': '/hod/dashboard',
+        'TEACHER': '/teacher/dashboard',
+        'STUDENT': '/student/dashboard'
+      };
+      const redirectPath = rolePathMap[authUser.role] || '/login';
+      navigate(redirectPath);
     }
   }, [authUser, isCheckingAuth, navigate]);
 
@@ -27,8 +35,10 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login({ email, password });
-      navigate("/dashboard");
+      // Navigation will happen automatically via the useEffect above
+      // because authUser will be updated
     } catch (error) {
+      console.error('Login error:', error);
     }
   };
 

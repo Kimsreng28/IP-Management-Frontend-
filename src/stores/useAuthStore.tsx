@@ -7,6 +7,15 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  role: string;
+  image?: string;
+  name_kh?: string;
+  name_en?: string;
+  phone?: string;
+  gender?: string;
+  dob?: string;
+  address?: string;
+  is_active?: boolean;
 }
 
 interface LoginData {
@@ -16,6 +25,7 @@ interface LoginData {
 
 interface AuthState {
   authUser: User | null;
+  token: string | null; 
   isLoggingIn: boolean;
   isCheckingAuth: boolean;
   hasCheckedInitialAuth: boolean;
@@ -30,6 +40,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       authUser: null,
+      token: null, // Initialize token
       isLoggingIn: false,
       isCheckingAuth: false,
       hasCheckedInitialAuth: false,
@@ -53,6 +64,7 @@ export const useAuthStore = create<AuthState>()(
           if (error.response?.status === 401) {
             set({
               authUser: null,
+              token: null,
               hasCheckedInitialAuth: true,
             });
             return;
@@ -61,6 +73,7 @@ export const useAuthStore = create<AuthState>()(
 
           set({
             authUser: null,
+            token: null,
             hasCheckedInitialAuth: true,
           });
 
@@ -74,12 +87,27 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoggingIn: true });
         try {
           const res = await axiosInstance.post("/auth/login", data);
+          console.log("Login API response:", res.data);
+
+          const userData = res.data.user || res.data;
+          const tokenData = res.data.token || null;
+
+          const normalizedUser = {
+            ...userData,
+            role: userData.role.toUpperCase(),
+          };
+
+          console.log("Setting authUser:", normalizedUser);
+
           set({
-            authUser: res.data,
+            authUser: normalizedUser,
+            token: tokenData,
             hasCheckedInitialAuth: true,
           });
+
           toast.success("Logged in successfully");
         } catch (error: any) {
+          console.error("Login error:", error);
           const errorMessage = error.response?.data?.message || "Login failed";
           toast.error(errorMessage);
           throw error;
@@ -91,19 +119,15 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         try {
           await axiosInstance.post("/auth/logout");
+        } catch (error) {
+          console.error("Logout error:", error);
+        } finally {
           set({
             authUser: null,
+            token: null,
             hasCheckedInitialAuth: true,
           });
           toast.success("Logged out successfully");
-        } catch (error: any) {
-          const errorMessage = error.response?.data?.message || "Logout failed";
-          toast.error(errorMessage);
-          // Still clear local state even if server logout fails
-          set({
-            authUser: null,
-            hasCheckedInitialAuth: true,
-          });
         }
       },
 
@@ -115,6 +139,7 @@ export const useAuthStore = create<AuthState>()(
       name: "auth-storage",
       partialize: (state) => ({
         authUser: state.authUser,
+        token: state.token,
       }),
     }
   )

@@ -1,30 +1,57 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
-import Dashboard from '../pages/Dashboard';
 import DashboardLayout from '../layouts/DashboardLayout';
-import LoginPage from '../pages/auth/LoginPage';
+import LoginPage from '../pages/p1-auth/LoginPage';
+import AdminDashboard from '../pages/p2-admin/AdminDashboard';
+import AdminUsers from '../pages/p2-admin/AdminUsers';
+import AdminDepartments from '../pages/p2-admin/AdminDepartments';
+import HODDashboard from '../pages/p3-hod/HODDashboard';
+import HODAttendance from '../pages/p3-hod/HODAttendance';
+import TeacherDashboard from '../pages/p4-teacher/TeacherDashboard';
+import TeacherAttendance from '../pages/p4-teacher/TeacherAttendance';
+import StudentDashboard from '../pages/p5-student/StudentDashboard';
+import StudentAttendance from '../pages/p5-student/StudentAttendance';
+import Profile from '../pages/Profile';
 
-// Placeholder pages
-const Attendance = () => <div className="p-6">Attendance Page</div>;
-const LeaveRequest = () => <div className="p-6">Leave Request Page</div>;
-const ELibrary = () => <div className="p-6">E-Library Page</div>;
-const Profile = () => <div className="p-6">Profile Page</div>;
+// Role-based route guard component
+const RoleRoute: React.FC<{
+  children: React.ReactNode;
+  allowedRoles: string[];
+}> = ({ children, allowedRoles }) => {
+  const { authUser } = useAuthStore();
+  const location = useLocation();
+
+  if (!authUser) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (!allowedRoles.includes(authUser.role)) {
+    // Redirect to role-specific dashboard
+    const rolePathMap: Record<string, string> = {
+      'ADMIN': '/admin/dashboard',
+      'HEAD_OF_DEPARTMENT': '/hod/dashboard',
+      'TEACHER': '/teacher/dashboard',
+      'STUDENT': '/student/dashboard'
+    };
+    const redirectPath = rolePathMap[authUser.role] || '/login';
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  return <>{children}</>;
+};
 
 const AppRoutes: React.FC = () => {
   const { checkAuth, hasCheckedInitialAuth, setHasCheckedInitialAuth, authUser } = useAuthStore();
   const location = useLocation();
 
-  // Check auth only once when app loads (on root path)
   useEffect(() => {
-    // Only check auth if we haven't checked yet
     if (!hasCheckedInitialAuth) {
       checkAuth();
       setHasCheckedInitialAuth(true);
     }
   }, [checkAuth, hasCheckedInitialAuth, setHasCheckedInitialAuth]);
 
-  // Show loading only on initial auth check
   if (!hasCheckedInitialAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -36,43 +63,100 @@ const AppRoutes: React.FC = () => {
     );
   }
 
+  // Function to get default route based on role
+  const getDefaultRoute = () => {
+    if (!authUser || !authUser.role) return '/login';
+    
+    // Map role to dashboard path
+    const rolePathMap: Record<string, string> = {
+      'ADMIN': '/admin/dashboard',
+      'HEAD_OF_DEPARTMENT': '/hod/dashboard',
+      'TEACHER': '/teacher/dashboard',
+      'STUDENT': '/student/dashboard'
+    };
+    
+    return rolePathMap[authUser.role] || '/login';
+  };
+
+  // Get the current user's default route
+  const defaultRoute = authUser ? getDefaultRoute() : '/login';
+
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={
-        // If already logged in, redirect to dashboard
-        authUser ? <Navigate to="/dashboard" replace /> : <LoginPage />
+        authUser ? <Navigate to={defaultRoute} replace /> : <LoginPage />
       } />
       
-      {/* Protected Routes */}
+      {/* Root redirect */}
       <Route path="/" element={
-        // Root path - redirect based on auth status
-        authUser ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+        <Navigate to={defaultRoute} replace />
       } />
       
-      {/* All dashboard routes are protected */}
+      {/* Protected Routes within Dashboard Layout */}
       <Route element={<DashboardLayout />}>
-        <Route path="/dashboard" element={
-          // Protect dashboard route
-          authUser ? <Dashboard /> : <Navigate to="/login" replace state={{ from: location }} />
+        {/* ADMIN Routes */}
+        <Route path="/admin/dashboard" element={
+          <RoleRoute allowedRoles={['ADMIN']}>
+            <AdminDashboard />
+          </RoleRoute>
         } />
-        <Route path="/attendance" element={
-          authUser ? <Attendance /> : <Navigate to="/login" replace state={{ from: location }} />
+        <Route path="/admin/users" element={
+          <RoleRoute allowedRoles={['ADMIN']}>
+            <AdminUsers />
+          </RoleRoute>
         } />
-        <Route path="/leave-request" element={
-          authUser ? <LeaveRequest /> : <Navigate to="/login" replace state={{ from: location }} />
+        <Route path="/admin/departments" element={
+          <RoleRoute allowedRoles={['ADMIN']}>
+            <AdminDepartments />
+          </RoleRoute>
         } />
-        <Route path="/e-library" element={
-          authUser ? <ELibrary /> : <Navigate to="/login" replace state={{ from: location }} />
+        
+        {/* HEAD_OF_DEPARTMENT Routes */}
+        <Route path="/hod/dashboard" element={
+          <RoleRoute allowedRoles={['HEAD_OF_DEPARTMENT']}>
+            <HODDashboard />
+          </RoleRoute>
         } />
+        <Route path="/hod/attendance" element={
+          <RoleRoute allowedRoles={['HEAD_OF_DEPARTMENT']}>
+            <HODAttendance />
+          </RoleRoute>
+        } />
+        
+        {/* TEACHER Routes */}
+        <Route path="/teacher/dashboard" element={
+          <RoleRoute allowedRoles={['TEACHER']}>
+            <TeacherDashboard />
+          </RoleRoute>
+        } />
+        <Route path="/teacher/attendance" element={
+          <RoleRoute allowedRoles={['TEACHER']}>
+            <TeacherAttendance />
+          </RoleRoute>
+        } />
+        
+        {/* STUDENT Routes */}
+        <Route path="/student/dashboard" element={
+          <RoleRoute allowedRoles={['STUDENT']}>
+            <StudentDashboard />
+          </RoleRoute>
+        } />
+        <Route path="/student/attendance" element={
+          <RoleRoute allowedRoles={['STUDENT']}>
+            <StudentAttendance />
+          </RoleRoute>
+        } />
+        
+        {/* Common Routes accessible to all authenticated users */}
         <Route path="/profile" element={
-          authUser ? <Profile /> : <Navigate to="/login" replace state={{ from: location }} />
+          authUser ? <Profile /> : <Navigate to="/login" replace />
         } />
       </Route>
       
       {/* Catch all route */}
       <Route path="*" element={
-        <Navigate to={authUser ? "/dashboard" : "/login"} replace />
+        <Navigate to={defaultRoute} replace />
       } />
     </Routes>
   );
