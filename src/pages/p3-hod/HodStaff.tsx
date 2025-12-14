@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Profile = () => {
+const HodStaff = () => {
   return (
     <div>
-      Profile
+      HodStaff
     </div>
   )
 }
 
-export default Profile
+export default HodStaff

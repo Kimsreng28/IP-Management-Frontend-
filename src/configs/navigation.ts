@@ -1,66 +1,188 @@
-import {
-  LayoutDashboard,
-  Calendar,
-  BookOpen,
-  User,
-  Users,
-  Settings,
-  FileText,
-  BarChart,
-  Building,
-  BookMarked,
-  ClipboardCheck
-} from 'lucide-react';
+import { LayoutDashboard, Calendar, BookOpen, User, Users, BarChart, LogIn } from "lucide-react";
+import { lazy } from "react";
+import type { ComponentType } from "react";
 
-export interface MenuItem {
+// Lazy load ALL page components INCLUDING Login
+const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage")); // Make sure this path is correct!
+const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
+const AdminStudents = lazy(() => import("../pages/p2-admin/AdminStudents"));
+const AdminProfile = lazy(() => import("../pages/p2-admin/AdminProfile"));
+
+const HODDashboard = lazy(() => import("../pages/p3-hod/HODDashboard"));
+const HodStaff = lazy(() => import("../pages/p3-hod/HodStaff"));
+const HodReports = lazy(() => import("../pages/p3-hod/HodReports"));
+
+const TeacherDashboard = lazy(() => import("../pages/p4-teacher/TeacherDashboard"));
+const TeacherAttendance = lazy(() => import("../pages/p4-teacher/TeacherAttendance"));
+const TeacherCourses = lazy(() => import("../pages/p4-teacher/TeacherCourses"));
+
+const StudentDashboard = lazy(() => import("../pages/p5-student/StudentDashboard"));
+const StudentAttendance = lazy(() => import("../pages/p5-student/StudentAttendance"));
+const StudentCourses = lazy(() => import("../pages/p5-student/StudentCourses"));
+
+// Route configuration interface
+export interface RouteConfig {
   path: string;
-  icon: any;
+  icon?: any; // Make icon optional for non-navigation routes
   label: string;
-  roles: string[]; // Which roles can access this menu
+  roles: string[]; // Empty array = public route (no authentication required)
+  component: ComponentType<any>;
+  exact?: boolean;
+  children?: RouteConfig[];
 }
 
-export const menuConfigs: Record<string, MenuItem[]> = {
-  // Admin Navigation
+// Updated route configs with PUBLIC routes section
+export const routeConfigs: Record<string, RouteConfig[]> = {
+  // PUBLIC ROUTES - accessible to everyone (including unauthenticated users)
+  PUBLIC: [
+    {
+      path: "/login",
+      icon: LogIn,
+      label: "Login",
+      roles: [], // Empty array = public route
+      component: LoginPage,
+      exact: true,
+    },
+    // You can add more public routes here:
+    // {
+    //   path: "/register",
+    //   icon: UserPlus,
+    //   label: "Register",
+    //   roles: [],
+    //   component: lazy(() => import("../pages/Register")),
+    // },
+    // {
+    //   path: "/forgot-password",
+    //   icon: HelpCircle,
+    //   label: "Forgot Password",
+    //   roles: [],
+    //   component: lazy(() => import("../pages/ForgotPassword")),
+    // },
+  ],
+
+  // PROTECTED ROUTES - require authentication
   ADMIN: [
-    { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['ADMIN'] },
-    { path: '/admin/users', icon: Users, label: 'User Management', roles: ['ADMIN'] },
-    { path: '/admin/departments', icon: Building, label: 'Departments', roles: ['ADMIN'] },
-    { path: '/admin/courses', icon: BookMarked, label: 'Courses', roles: ['ADMIN'] },
-    { path: '/admin/reports', icon: BarChart, label: 'Reports', roles: ['ADMIN'] },
-    { path: '/admin/settings', icon: Settings, label: 'System Settings', roles: ['ADMIN'] },
+    {
+      path: "/admin/dashboard",
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      roles: ["ADMIN"],
+      component: AdminDashboard,
+      exact: true,
+    },
+    {
+      path: "/admin/students",
+      icon: Users,
+      label: "Student",
+      roles: ["ADMIN"],
+      component: AdminStudents,
+    },
+    {
+      path: "/admin/profile",
+      icon: User,
+      label: "Profile",
+      roles: ["ADMIN"],
+      component: AdminProfile,
+    },
   ],
 
-  // Head of Department Navigation
   HEAD_OF_DEPARTMENT: [
-    { path: '/hod/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['HEAD_OF_DEPARTMENT'] },
-    { path: '/hod/attendance', icon: ClipboardCheck, label: 'Department Attendance', roles: ['HEAD_OF_DEPARTMENT'] },
-    { path: '/hod/leave-requests', icon: FileText, label: 'Leave Approvals', roles: ['HEAD_OF_DEPARTMENT'] },
-    { path: '/hod/staff', icon: Users, label: 'Staff Management', roles: ['HEAD_OF_DEPARTMENT'] },
-    { path: '/hod/reports', icon: BarChart, label: 'Department Reports', roles: ['HEAD_OF_DEPARTMENT'] },
+    {
+      path: "/hod/dashboard",
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      roles: ["HEAD_OF_DEPARTMENT"],
+      component: HODDashboard,
+    },
+    {
+      path: "/hod/staff",
+      icon: Users,
+      label: "Staff Management",
+      roles: ["HEAD_OF_DEPARTMENT"],
+      component: HodStaff,
+    },
+    {
+      path: "/hod/reports",
+      icon: BarChart,
+      label: "Department Reports",
+      roles: ["HEAD_OF_DEPARTMENT"],
+      component: HodReports,
+    },
   ],
 
-  // Teacher Navigation
   TEACHER: [
-    { path: '/teacher/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['TEACHER'] },
-    { path: '/teacher/attendance', icon: Calendar, label: 'Take Attendance', roles: ['TEACHER'] },
-    { path: '/teacher/courses', icon: BookOpen, label: 'My Courses', roles: ['TEACHER'] },
-    { path: '/teacher/leave', icon: Calendar, label: 'Leave Request', roles: ['TEACHER'] },
-    { path: '/teacher/e-library', icon: BookOpen, label: 'E-Library', roles: ['TEACHER'] },
-    { path: '/teacher/grades', icon: FileText, label: 'Grade Students', roles: ['TEACHER'] },
+    {
+      path: "/teacher/dashboard",
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      roles: ["TEACHER"],
+      component: TeacherDashboard,
+    },
+    {
+      path: "/teacher/attendance",
+      icon: Calendar,
+      label: "Take Attendance",
+      roles: ["TEACHER"],
+      component: TeacherAttendance,
+    },
+    {
+      path: "/teacher/courses",
+      icon: BookOpen,
+      label: "My Courses",
+      roles: ["TEACHER"],
+      component: TeacherCourses,
+    },
   ],
 
-  // Student Navigation
   STUDENT: [
-    { path: '/student/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['STUDENT'] },
-    { path: '/student/attendance', icon: Calendar, label: 'My Attendance', roles: ['STUDENT'] },
-    { path: '/student/courses', icon: BookOpen, label: 'My Courses', roles: ['STUDENT'] },
-    { path: '/student/leave', icon: Calendar, label: 'Leave Request', roles: ['STUDENT'] },
-    { path: '/student/e-library', icon: BookOpen, label: 'E-Library', roles: ['STUDENT'] },
-    { path: '/student/grades', icon: FileText, label: 'My Grades', roles: ['STUDENT'] },
+    {
+      path: "/student/dashboard",
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      roles: ["STUDENT"],
+      component: StudentDashboard,
+    },
+    {
+      path: "/student/attendance",
+      icon: Calendar,
+      label: "My Attendance",
+      roles: ["STUDENT"],
+      component: StudentAttendance,
+    },
+    {
+      path: "/student/courses",
+      icon: BookOpen,
+      label: "My Courses",
+      roles: ["STUDENT"],
+      component: StudentCourses,
+    },
   ],
 };
 
-// Common menu items for all roles (profile, logout)
-export const commonMenuItems: MenuItem[] = [
-  { path: '/profile', icon: User, label: 'Profile', roles: ['ADMIN', 'HEAD_OF_DEPARTMENT', 'TEACHER', 'STUDENT'] },
-];
+// Helper functions
+export function getAllRoutes(): RouteConfig[] {
+  // Combine ALL routes: public + all role-specific routes
+  return [
+    ...(routeConfigs.PUBLIC || []),
+    ...Object.values(routeConfigs).flat().filter(route => 
+      route.roles.length > 0 // Only include protected routes
+    )
+  ];
+}
+
+export function getRoutesByRole(role: string): RouteConfig[] {
+  // Returns navigation routes for a specific role (excluding public routes)
+  return routeConfigs[role] || [];
+}
+
+export function hasRouteAccess(path: string, userRole: string): boolean {
+  const allRoutes = getAllRoutes();
+  const route = allRoutes.find((r) => r.path === path);
+  
+  // If route has no roles defined, it's public (accessible to everyone)
+  if (route && route.roles.length === 0) {
+    return true;
+  }
+  
+  return route ? route.roles.includes(userRole) : false;
+}
