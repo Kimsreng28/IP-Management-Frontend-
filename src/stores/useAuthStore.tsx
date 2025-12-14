@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       authUser: null,
-      token: null, // Initialize token
+      token: null, 
       isLoggingIn: false,
       isCheckingAuth: false,
       hasCheckedInitialAuth: false,
@@ -48,13 +48,11 @@ export const useAuthStore = create<AuthState>()(
       checkAuth: async () => {
         const { authUser, token } = get();
 
-        // If no authUser AND no token, we know user is not logged in
         if (!authUser && !token) {
           set({ hasCheckedInitialAuth: true, isCheckingAuth: false });
-          return; // Skip API call entirely
+          return; 
         }
 
-        // If we already have authUser, just mark as checked
         if (authUser) {
           set({ hasCheckedInitialAuth: true });
           return;

@@ -1,5 +1,5 @@
 import type React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom"; 
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X, LogOut } from "lucide-react";
 import { getRoutesByRole, routeConfigs } from "../../configs/navigation";
 import { useAuthStore } from "../../stores/useAuthStore";
@@ -17,16 +17,18 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const location = useLocation();
   const pathname = location.pathname;
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const { logout } = useAuthStore();
 
-  const normalizedRole = userRole?.trim().toUpperCase() as keyof typeof routeConfigs;
+  const normalizedRole = userRole
+    ?.trim()
+    .toUpperCase() as keyof typeof routeConfigs;
   const roleMenu = getRoutesByRole(normalizedRole) || getRoutesByRole("ADMIN");
 
   const handleLogout = async () => {
-    await logout();   
-    onClose();         
-    navigate("/login", { replace: true });  
+    await logout();
+    onClose();
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -54,7 +56,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between px-4 py-6 border-b border-white/10">
             <div className="text-white">
               <h1 className="text-xl font-bold leading-tight">RTC KcKp</h1>
-              <p className="text-sm opacity-90 leading-tight">Region Training Center</p>
+              <p className="text-sm opacity-90 leading-tight">
+                Region Training Center
+              </p>
             </div>
             <button
               onClick={onClose}

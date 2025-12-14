@@ -165,8 +165,8 @@ export default function AdminStudents() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg 
-                 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500
-                 text-base placeholder-gray-500 transition-colors"
+     focus:outline-none focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E]
+     text-base placeholder-gray-500 transition-colors"
             />
           </div>
 

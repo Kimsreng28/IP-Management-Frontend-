@@ -1,4 +1,3 @@
-// components/routes/ProtectedRoute.tsx
 import { Navigate } from "react-router-dom"
 import type { ReactNode } from "react"
 
@@ -14,18 +13,15 @@ export default function ProtectedRoute({
   userRole 
 }: ProtectedRouteProps) {
   
-  // PUBLIC ROUTES: If route has no roles defined (empty array), it's accessible to everyone
+  // PUBLIC ROUTES
   if (allowedRoles.length === 0) {
     return <>{children}</>
   }
   
-  // PROTECTED ROUTES: Require authentication
-  // If no user role, redirect to login
+  // PROTECTED ROUTES
   if (!userRole) {
     return <Navigate to="/login" replace />
   }
-
-  // If user doesn't have required role, redirect to their dashboard
   if (!allowedRoles.includes(userRole)) {
     const dashboardPath = 
       userRole === "ADMIN" ? "/admin/dashboard" :
@@ -37,6 +33,5 @@ export default function ProtectedRoute({
     return <Navigate to={dashboardPath} replace />
   }
 
-  // User has access, render the protected content
   return <>{children}</>
 }
