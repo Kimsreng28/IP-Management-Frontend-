@@ -1,5 +1,3 @@
-// src/routes/AppRoutes.tsx
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense } from "react";
 import { getAllRoutes } from "../configs/navigation";
@@ -29,8 +27,10 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
-        {/* Root redirect based on auth state */}
-        <Route path="/" element={<Navigate to={getDefaultDashboard()} replace />} />
+        <Route
+          path="/"
+          element={<Navigate to={getDefaultDashboard()} replace />}
+        />
 
         {/* All configured routes */}
         {allRoutes.map((route) => (
@@ -43,14 +43,11 @@ export default function AppRoutes() {
                 <route.component />
               ) : (
                 // Protected routes → just render the page component
-                // (DashboardLayout is already wrapped in App.tsx)
                 <route.component />
               )
             }
           />
         ))}
-
-        {/* 404 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

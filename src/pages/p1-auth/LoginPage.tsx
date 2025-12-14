@@ -35,7 +35,6 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
     await login({ email, password });
-    // No navigate() here → App.tsx will detect authUser change and redirect via "/"
   } catch (error) {
     console.error("Login error:", error);
   }
@@ -101,7 +100,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-gray-400"
+                className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] placeholder:text-gray-400"
                 required
               />
             </div>
@@ -121,7 +120,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-11 px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-gray-400"
+                  className="w-full h-11 px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] placeholder:text-gray-400"
                   required
                 />
                 <button
@@ -198,7 +197,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-11 bg-[#131C2E] hover:bg-[#1B2742] text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#131C2E] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoggingIn ? "Signing in..." : "Sign In"}
             </button>

@@ -1,30 +1,30 @@
-"use client"
-import type React from "react"
-import { useState } from "react"
-import { Outlet } from "react-router-dom"
-import Navbar from "./Navbar"
-import Sidebar from "./Sidebar"
+"use client";
+import type React from "react";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
 
 interface DashboardLayoutProps {
-  userName?: string
-  userRole?: string
-  userAvatar?: string
+  userName?: string;
+  userRole?: string;
+  userAvatar?: string;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   userName = "User",
   userRole = "ADMIN",
-  userAvatar 
+  userAvatar,
 }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-        userRole={userRole} 
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        userRole={userRole}
       />
 
       {/* Main Content */}
@@ -39,11 +39,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <Outlet /> {/* Nested routes will render here */}
+          <Outlet />
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default DashboardLayout;

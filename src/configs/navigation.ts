@@ -2,8 +2,7 @@ import { LayoutDashboard, Calendar, BookOpen, User, Users, BarChart, LogIn } fro
 import { lazy } from "react";
 import type { ComponentType } from "react";
 
-// Lazy load ALL page components INCLUDING Login
-const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage")); // Make sure this path is correct!
+const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage")); 
 const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
 const AdminStudents = lazy(() => import("../pages/p2-admin/AdminStudents"));
 const AdminProfile = lazy(() => import("../pages/p2-admin/AdminProfile"));
@@ -20,18 +19,18 @@ const StudentDashboard = lazy(() => import("../pages/p5-student/StudentDashboard
 const StudentAttendance = lazy(() => import("../pages/p5-student/StudentAttendance"));
 const StudentCourses = lazy(() => import("../pages/p5-student/StudentCourses"));
 
-// Route configuration interface
+
 export interface RouteConfig {
   path: string;
-  icon?: any; // Make icon optional for non-navigation routes
+  icon?: any; 
   label: string;
-  roles: string[]; // Empty array = public route (no authentication required)
+  roles: string[]; 
   component: ComponentType<any>;
   exact?: boolean;
   children?: RouteConfig[];
 }
 
-// Updated route configs with PUBLIC routes section
+
 export const routeConfigs: Record<string, RouteConfig[]> = {
   // PUBLIC ROUTES - accessible to everyone (including unauthenticated users)
   PUBLIC: [
@@ -39,11 +38,10 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       path: "/login",
       icon: LogIn,
       label: "Login",
-      roles: [], // Empty array = public route
+      roles: [], 
       component: LoginPage,
       exact: true,
     },
-    // You can add more public routes here:
     // {
     //   path: "/register",
     //   icon: UserPlus,
@@ -161,17 +159,15 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
 
 // Helper functions
 export function getAllRoutes(): RouteConfig[] {
-  // Combine ALL routes: public + all role-specific routes
   return [
     ...(routeConfigs.PUBLIC || []),
     ...Object.values(routeConfigs).flat().filter(route => 
-      route.roles.length > 0 // Only include protected routes
+      route.roles.length > 0 
     )
   ];
 }
 
 export function getRoutesByRole(role: string): RouteConfig[] {
-  // Returns navigation routes for a specific role (excluding public routes)
   return routeConfigs[role] || [];
 }
 
@@ -179,7 +175,6 @@ export function hasRouteAccess(path: string, userRole: string): boolean {
   const allRoutes = getAllRoutes();
   const route = allRoutes.find((r) => r.path === path);
   
-  // If route has no roles defined, it's public (accessible to everyone)
   if (route && route.roles.length === 0) {
     return true;
   }
