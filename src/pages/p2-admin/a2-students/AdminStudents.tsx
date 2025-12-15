@@ -7,13 +7,11 @@ import {
   Trash2,
   Plus,
   Search,
-  ChevronUp,
-  ChevronDown,
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useStudentStore } from "../../stores/useStudentStore";
+import { useStudentStore } from "../../../stores/useStudentStore";
 import StudentViewDetail from "./AdminStudentDetail";
 
 export default function AdminStudents() {
@@ -75,12 +73,10 @@ export default function AdminStudents() {
     fetchStudents();
   }, []);
 
-  // Fetch when filters change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchStudents();
-    }, 300); // Debounce search
-
+    }, 300);
     return () => clearTimeout(timeoutId);
   }, [
     filters.search,
@@ -353,25 +349,6 @@ export default function AdminStudents() {
             ))}
           </select>
 
-          {/* Current sort info (optional - shows what's being sorted) */}
-          {/* {filters.sortBy && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 px-3 py-1.5 bg-gray-100 rounded-lg">
-              <span>Sorted by:</span>
-              <span className="font-medium capitalize">
-                {filters.sortBy === "student_id"
-                  ? "ID"
-                  : filters.sortBy === "name_en"
-                  ? "English Name"
-                  : filters.sortBy === "name_kh"
-                  ? "Khmer Name"
-                  : "Date of Birth"}
-              </span>
-              <span className="font-medium">
-                ({filters.sortOrder === "ASC" ? "Ascending" : "Descending"})
-              </span>
-            </div>
-          )} */}
-
           {/* Push Clear button to the end */}
           <div className="flex-1" />
 
@@ -452,7 +429,6 @@ export default function AdminStudents() {
               >
                 <div className="flex items-center gap-1">
                   Latin Name
-                  {/* Hover-only arrow */}
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {filters.sortOrder === "ASC" ? (
                       <ArrowUp size={14} className="text-gray-700" />
@@ -503,7 +479,6 @@ export default function AdminStudents() {
               // Show skeleton rows during initial load or hard refresh
               Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
             ) : students.length === 0 ? (
-              // No results
               <tr>
                 <td
                   colSpan={10}
@@ -586,6 +561,7 @@ export default function AdminStudents() {
         </table>
       </div>
 
+      {/* Open Modal */}
       {selectedStudentId && (
         <StudentViewDetail
           studentId={selectedStudentId}

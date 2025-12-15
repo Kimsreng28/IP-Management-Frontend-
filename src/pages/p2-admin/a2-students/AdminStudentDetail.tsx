@@ -11,7 +11,7 @@ import {
   Award,
   Hash,
 } from "lucide-react";
-import { useStudentStore } from "../../stores/useStudentStore";
+import { useStudentStore } from "../../../stores/useStudentStore";
 
 interface StudentDetailProps {
   studentId: string;
@@ -24,7 +24,7 @@ export default function StudentViewDetail({
   isOpen,
   onClose,
 }: StudentDetailProps) {
-  const [student, setStudent] = useState<any>(null); // Use 'any' or create proper type
+  const [student, setStudent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

@@ -4,7 +4,7 @@ import type { ComponentType } from "react";
 
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage")); 
 const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
-const AdminStudents = lazy(() => import("../pages/p2-admin/AdminStudents"));
+const AdminStudents = lazy(() => import("../pages/p2-admin/a2-students/AdminStudents"));
 const AdminProfile = lazy(() => import("../pages/p2-admin/AdminProfile"));
 
 const HODDashboard = lazy(() => import("../pages/p3-hod/HODDashboard"));
