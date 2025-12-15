@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Eye,
   Edit2,
   Trash2,
   Plus,
   Search,
-  Loader2,
   ChevronUp,
   ChevronDown,
   ArrowUp,
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useStudentStore } from "../../stores/useStudentStore";
+import StudentViewDetail from "./AdminStudentDetail";
 
 export default function AdminStudents() {
   const {
@@ -27,7 +27,6 @@ export default function AdminStudents() {
 
     // UI State
     isLoading,
-    isFetching,
 
     // Filters
     filters,
@@ -53,6 +52,23 @@ export default function AdminStudents() {
   } = useStudentStore();
 
   const genders = ["Male", "Female"];
+
+  // Add state for the modal in the component:
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null
+  );
+
+  // Add handlers for opening/closing the modal:
+  const handleViewStudent = (studentId: string) => {
+    setSelectedStudentId(studentId);
+    setViewModalOpen(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setViewModalOpen(false);
+    setSelectedStudentId(null);
+  };
 
   // Initial fetch on component mount
   useEffect(() => {
@@ -125,26 +141,6 @@ export default function AdminStudents() {
       // If sorting by a different column, set new column with default ASC order
       setFilter("sortBy", column);
       setFilter("sortOrder", "ASC");
-    }
-  };
-
-  // Get sort indicator for a column
-  const getSortIndicator = (
-    column: "student_id" | "name_en" | "name_kh" | "dob"
-  ) => {
-    if (filters.sortBy !== column) {
-      return (
-        <div className="inline-flex flex-col ml-1 opacity-40">
-          <ChevronUp className="w-3 h-3 -mb-1" />
-          <ChevronDown className="w-3 h-3 -mt-1" />
-        </div>
-      );
-    }
-
-    if (filters.sortOrder === "ASC") {
-      return <ChevronUp className="w-4 h-4 ml-1" />;
-    } else {
-      return <ChevronDown className="w-4 h-4 ml-1" />;
     }
   };
 
@@ -565,9 +561,13 @@ export default function AdminStudents() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleViewStudent(student.id)}
+                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
+
                       <button className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -586,6 +586,13 @@ export default function AdminStudents() {
         </table>
       </div>
 
+      {selectedStudentId && (
+        <StudentViewDetail
+          studentId={selectedStudentId}
+          isOpen={viewModalOpen}
+          onClose={handleCloseViewModal}
+        />
+      )}
       {/* Pagination */}
       {meta && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 gap-4">
