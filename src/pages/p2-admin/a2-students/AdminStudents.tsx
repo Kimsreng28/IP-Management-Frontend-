@@ -19,6 +19,7 @@ export default function AdminStudents() {
     // Data
     students,
     departments,
+    academic_years,
     sections,
     programs,
     meta,
@@ -82,10 +83,11 @@ export default function AdminStudents() {
     filters.search,
     filters.department,
     filters.program,
+    filters.academic_year,
     filters.section,
     filters.gender,
-    filters.sortBy,
-    filters.sortOrder,
+    filters.sort_by,
+    filters.sort_order,
     filters.page,
     filters.limit,
   ]);
@@ -109,6 +111,12 @@ export default function AdminStudents() {
     setFilter("search", e.target.value);
   };
 
+  const handleAcademicYearChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setFilter("academic_year", e.target.value);
+  };
+
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter("department", e.target.value);
   };
@@ -127,16 +135,16 @@ export default function AdminStudents() {
 
   // Handle column sorting
   const handleSort = (column: "student_id" | "name_en" | "name_kh" | "dob") => {
-    const currentSortBy = filters.sortBy;
-    const currentSortOrder = filters.sortOrder;
+    const currentSortBy = filters.sort_by;
+    const currentSortOrder = filters.sort_order;
 
     if (currentSortBy === column) {
       // If already sorting by this column, toggle order
-      setFilter("sortOrder", currentSortOrder === "ASC" ? "DESC" : "ASC");
+      setFilter("sort_order", currentSortOrder === "ASC" ? "DESC" : "ASC");
     } else {
       // If sorting by a different column, set new column with default ASC order
-      setFilter("sortBy", column);
-      setFilter("sortOrder", "ASC");
+      setFilter("sort_by", column);
+      setFilter("sort_order", "ASC");
     }
   };
 
@@ -249,6 +257,33 @@ export default function AdminStudents() {
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-3 mb-4">
+          <select
+            value={filters.academic_year || ""}
+            onChange={handleAcademicYearChange}
+            className="
+    px-4 py-2.5
+    border border-gray-300 rounded-lg
+    bg-gray-50
+    hover:border-gray-400
+    focus:ring-2 focus:ring-[#131C2E]
+    focus:border-[#131C2E]
+    cursor-pointer
+    outline-none
+    text-sm
+    transition-colors
+    min-w-[150px]
+  "
+          >
+            <option value="">Academic Year</option>
+            {/* Add conditional check here */}
+            {academic_years &&
+              academic_years.map((year) => (
+                <option key={year.id} value={year.id}>
+                  {year.name}
+                </option>
+              ))}
+          </select>
+
           <select
             value={filters.department || ""}
             onChange={handleDepartmentChange}
@@ -395,7 +430,7 @@ export default function AdminStudents() {
                 <div className="flex items-center gap-1">
                   ID
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sortOrder === "ASC" ? (
+                    {filters.sort_order === "ASC" ? (
                       <ArrowUp size={14} className="text-gray-700" />
                     ) : (
                       <ArrowDown size={14} className="text-gray-700" />
@@ -412,7 +447,7 @@ export default function AdminStudents() {
                 <div className="flex items-center gap-1">
                   Khmer Name
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sortOrder === "ASC" ? (
+                    {filters.sort_order === "ASC" ? (
                       <ArrowUp size={14} className="text-gray-700" />
                     ) : (
                       <ArrowDown size={14} className="text-gray-700" />
@@ -430,7 +465,7 @@ export default function AdminStudents() {
                 <div className="flex items-center gap-1">
                   Latin Name
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sortOrder === "ASC" ? (
+                    {filters.sort_order === "ASC" ? (
                       <ArrowUp size={14} className="text-gray-700" />
                     ) : (
                       <ArrowDown size={14} className="text-gray-700" />
@@ -447,7 +482,7 @@ export default function AdminStudents() {
                 <div className="flex items-center gap-1">
                   DOB
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sortOrder === "ASC" ? (
+                    {filters.sort_order === "ASC" ? (
                       <ArrowUp size={14} className="text-gray-700" />
                     ) : (
                       <ArrowDown size={14} className="text-gray-700" />

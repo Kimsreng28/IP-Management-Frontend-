@@ -17,6 +17,10 @@ interface Student {
   academic_year?: string;
 }
 
+interface AcademicYear {
+  id: number;
+  name: string;
+}
 interface Department {
   id: number;
   name: string;
@@ -35,13 +39,14 @@ interface Program {
 }
 
 interface FilterParams {
+  academic_year?: string;
   department?: string;
   section?: string;
   program?: string;
   gender?: string;
   search?: string;
-  sortBy?: "dob" | "name_en" | "name_kh" | "student_id";
-  sortOrder?: "ASC" | "DESC";
+  sort_by?: "dob" | "name_en" | "name_kh" | "student_id";
+  sort_order?: "ASC" | "DESC";
   page?: number;
   limit?: number;
 }
@@ -60,6 +65,7 @@ interface StudentsResponse {
     departments: Department[];
     sections: Section[];
     programs: Program[];
+    academic_years: AcademicYear[];
   };
   meta: MetaData;
 }
@@ -70,17 +76,18 @@ interface StudentState {
   departments: Department[];
   sections: Section[];
   programs: Program[];
+  academic_years: AcademicYear[];
   meta: MetaData | null;
-  
+
   // UI State
   isLoading: boolean;
   isFetching: boolean;
   error: string | null;
-  
+
   // Filters
   filters: FilterParams;
   selectedStudents: string[];
-  
+
   // Actions
   fetchStudents: (params?: Partial<FilterParams>) => Promise<void>;
   fetchStudentById: (id: string) => Promise<Student | null>;
@@ -88,32 +95,36 @@ interface StudentState {
   updateStudent: (id: string, data: Partial<Student>) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
   deleteMultipleStudents: (ids: string[]) => Promise<void>;
-  
+
   // Filter management
-  setFilter: (key: keyof FilterParams, value: string | number | undefined) => void;
+  setFilter: (
+    key: keyof FilterParams,
+    value: string | number | undefined
+  ) => void;
   setFilters: (filters: Partial<FilterParams>) => void;
   resetFilters: () => void;
-  
+
   // Selection
   selectStudent: (id: string) => void;
   deselectStudent: (id: string) => void;
   selectAllStudents: () => void;
   deselectAllStudents: () => void;
   toggleStudentSelection: (id: string) => void;
-  
+
   // Pagination
   goToPage: (page: number) => void;
   setItemsPerPage: (limit: number) => void;
 }
 
 const defaultFilters: FilterParams = {
+  academic_year: "",
   department: "",
   section: "",
   program: "",
   gender: "",
   search: "",
-  sortBy: "student_id",
-  sortOrder: "ASC",
+  sort_by: "student_id",
+  sort_order: "ASC",
   page: 1,
   limit: 10,
 };
@@ -124,42 +135,44 @@ export const useStudentStore = create<StudentState>((set, get) => ({
   departments: [],
   sections: [],
   programs: [],
+  academic_years: [],
   meta: null,
-  
+
   isLoading: false,
   isFetching: false,
   error: null,
-  
+
   filters: defaultFilters,
   selectedStudents: [],
-  
+
   // Fetch students with filters
   fetchStudents: async (params?: Partial<FilterParams>) => {
     const currentFilters = get().filters;
     const newFilters = { ...currentFilters, ...params };
-    
+
     set({ isFetching: true, filters: newFilters });
-    
+
     try {
       // Build query params
       const queryParams = new URLSearchParams();
-      
+
       Object.entries(newFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== "" && value !== null) {
           queryParams.append(key, String(value));
         }
       });
-      
+
       const response = await axiosInstance.get<StudentsResponse>(
         `/admin/students?${queryParams.toString()}`
       );
-      
+
       if (response.data.success) {
         set({
           students: response.data.data,
           departments: response.data.data_setup.departments,
           sections: response.data.data_setup.sections,
           programs: response.data.data_setup.programs,
+          academic_years: response.data.data_setup.academic_years, 
           meta: response.data.meta,
           error: null,
         });
@@ -168,19 +181,22 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       }
     } catch (error: any) {
       console.error("Error fetching students:", error);
-      const errorMessage = error.response?.data?.message || "Failed to load students";
+      const errorMessage =
+        error.response?.data?.message || "Failed to load students";
       set({ error: errorMessage });
       toast.error(errorMessage);
     } finally {
       set({ isFetching: false });
     }
   },
-  
+
   // Fetch single student
   fetchStudentById: async (id: string) => {
     set({ isLoading: true });
     try {
-      const response = await axiosInstance.get<{ data: Student }>(`/admin/students/${id}`);
+      const response = await axiosInstance.get<{ data: Student }>(
+        `/admin/students/${id}`
+      );
       return response.data.data;
     } catch (error: any) {
       console.error("Error fetching student:", error);
@@ -190,7 +206,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  
+
   // Create student
   createStudent: async (data: Partial<Student>) => {
     set({ isLoading: true });
@@ -207,7 +223,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  
+
   // Update student
   updateStudent: async (id: string, data: Partial<Student>) => {
     set({ isLoading: true });
@@ -224,7 +240,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  
+
   // Delete student
   deleteStudent: async (id: string) => {
     set({ isLoading: true });
@@ -233,7 +249,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       toast.success("Student deleted successfully");
       // Remove from selected students
       set((state) => ({
-        selectedStudents: state.selectedStudents.filter(sid => sid !== id)
+        selectedStudents: state.selectedStudents.filter((sid) => sid !== id),
       }));
       // Refresh the list
       await get().fetchStudents();
@@ -245,7 +261,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  
+
   // Delete multiple students
   deleteMultipleStudents: async (ids: string[]) => {
     set({ isLoading: true });
@@ -264,73 +280,73 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  
+
   // Filter management
   setFilter: (key, value) => {
     set((state) => ({
-      filters: { ...state.filters, [key]: value, page: 1 } // Reset to page 1 when filter changes
+      filters: { ...state.filters, [key]: value, page: 1 }, // Reset to page 1 when filter changes
     }));
   },
-  
+
   setFilters: (newFilters) => {
     set((state) => ({
-      filters: { ...state.filters, ...newFilters, page: 1 }
+      filters: { ...state.filters, ...newFilters, page: 1 },
     }));
   },
-  
+
   resetFilters: () => {
     set({ filters: defaultFilters });
   },
-  
+
   // Selection management
   selectStudent: (id) => {
     set((state) => ({
-      selectedStudents: [...state.selectedStudents, id]
+      selectedStudents: [...state.selectedStudents, id],
     }));
   },
-  
+
   deselectStudent: (id) => {
     set((state) => ({
-      selectedStudents: state.selectedStudents.filter(sid => sid !== id)
+      selectedStudents: state.selectedStudents.filter((sid) => sid !== id),
     }));
   },
-  
+
   selectAllStudents: () => {
     set((state) => ({
-      selectedStudents: state.students.map(student => student.id)
+      selectedStudents: state.students.map((student) => student.id),
     }));
   },
-  
+
   deselectAllStudents: () => {
     set({ selectedStudents: [] });
   },
-  
+
   toggleStudentSelection: (id) => {
     set((state) => {
       const isSelected = state.selectedStudents.includes(id);
       if (isSelected) {
         return {
-          selectedStudents: state.selectedStudents.filter(sid => sid !== id)
+          selectedStudents: state.selectedStudents.filter((sid) => sid !== id),
         };
       } else {
         return {
-          selectedStudents: [...state.selectedStudents, id]
+          selectedStudents: [...state.selectedStudents, id],
         };
       }
     });
   },
-  
+
   // Pagination
   goToPage: (page) => {
     set((state) => ({
-      filters: { ...state.filters, page }
+      filters: { ...state.filters, page },
     }));
     get().fetchStudents({ page });
   },
-  
+
   setItemsPerPage: (limit) => {
     set((state) => ({
-      filters: { ...state.filters, limit, page: 1 }
+      filters: { ...state.filters, limit, page: 1 },
     }));
     get().fetchStudents({ limit, page: 1 });
   },
