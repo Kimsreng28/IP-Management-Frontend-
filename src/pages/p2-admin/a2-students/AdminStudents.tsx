@@ -158,9 +158,20 @@ export default function AdminStudents() {
   };
 
   // Handle delete
-  const handleDeleteStudent = async (id: string) => {
-    if (confirm("Are you sure you want to delete this student?")) {
-      await deleteStudent(id);
+  const handleDeleteStudent = async (
+    id: string,
+    name_kh: string,
+    name_en: string
+  ) => {
+    const message = `Are you sure you want to delete this student?\n\n${name_kh} (${name_en})`;
+
+    if (confirm(message)) {
+      try {
+        await deleteStudent(id);
+      } catch (error) {
+        console.error("Failed to delete student:", error);
+        toast.error("Failed to delete student");
+      }
     }
   };
 
@@ -582,7 +593,13 @@ export default function AdminStudents() {
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDeleteStudent(student.id)}
+                        onClick={() =>
+                          handleDeleteStudent(
+                            student.id,
+                            student.name_kh,
+                            student.name_en
+                          )
+                        }
                         className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />

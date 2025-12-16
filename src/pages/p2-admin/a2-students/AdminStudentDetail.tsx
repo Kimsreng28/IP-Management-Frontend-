@@ -40,7 +40,6 @@ export default function StudentViewDetail({
     setIsLoading(true);
     setError(null);
     try {
-      // Use the store method instead of manual fetch
       const studentData = await fetchStudentById(studentId);
 
       if (studentData) {
@@ -54,6 +53,20 @@ export default function StudentViewDetail({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getImageUrl = (imageUrl: string | null | undefined) => {
+    if (!imageUrl) return null;
+
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+      return imageUrl;
+    }
+
+    const BACKEND_URL =
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
+    return `${BACKEND_URL}${
+      imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl
+    }`;
   };
 
   const formatDate = (dateString: string) => {
@@ -86,12 +99,10 @@ export default function StudentViewDetail({
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="relative bg-white px-6 py-5 border-b border-gray-200">
-          {/* Title */}
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-bold text-gray-900">Student Detail</h2>
           </div>
 
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
@@ -123,15 +134,27 @@ export default function StudentViewDetail({
                 {/* Profile Image */}
                 <div className="shrink-0">
                   <div className="w-32 h-32 rounded-xl overflow-hidden bg-gray-200 border-4 border-gray-100 shadow-lg">
-                    <img
-                      src={student.image || "/default-avatar.png"}
-                      alt={student.name_en}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect fill='%23e5e7eb' width='128' height='128'/%3E%3Ctext x='50%25' y='50%25' font-size='48' text-anchor='middle' dy='.3em' fill='%239ca3af'%3E%3F%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
+                    {getImageUrl(student.image) ? (
+                      <img
+                        src={getImageUrl(student.image)!}
+                        alt={student.name_en}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to placeholder on error
+                          (e.target as HTMLImageElement).src =
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect fill='%23e5e7eb' width='128' height='128'/%3E%3Ctext x='50%25' y='50%25' font-size='48' text-anchor='middle' dy='.3em' fill='%239ca3af'%3E" +
+                            (student.name_en?.[0]?.toUpperCase() || "?") +
+                            "%3C/text%3E%3C/svg%3E";
+                        }}
+                      />
+                    ) : (
+                      // Default avatar with first letter
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-blue-500 to-purple-600">
+                        <span className="text-4xl font-bold text-white">
+                          {student.name_en?.[0]?.toUpperCase() || "?"}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
