@@ -301,7 +301,6 @@ export const useStudentStore = create<StudentState>((set, get) => ({
     set({ filters: defaultFilters });
   },
 
-  // Selection management
   selectStudent: (id) => {
     set((state) => ({
       selectedStudents: [...state.selectedStudents, id],

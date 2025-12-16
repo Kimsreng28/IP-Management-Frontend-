@@ -58,12 +58,10 @@ export default function StudentViewDetail({
   const getImageUrl = (imageUrl: string | null | undefined) => {
     if (!imageUrl) return null;
 
-    // If it's already a full URL (which it should be), use it as-is
     if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
       return imageUrl;
     }
 
-    // If it's a relative path (shouldn't happen with your current backend setup)
     const BACKEND_URL =
       import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
     return `${BACKEND_URL}${
@@ -151,7 +149,7 @@ export default function StudentViewDetail({
                       />
                     ) : (
                       // Default avatar with first letter
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-blue-500 to-purple-600">
                         <span className="text-4xl font-bold text-white">
                           {student.name_en?.[0]?.toUpperCase() || "?"}
                         </span>
