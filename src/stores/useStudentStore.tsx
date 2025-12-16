@@ -172,7 +172,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
           departments: response.data.data_setup.departments,
           sections: response.data.data_setup.sections,
           programs: response.data.data_setup.programs,
-          academic_years: response.data.data_setup.academic_years, 
+          academic_years: response.data.data_setup.academic_years,
           meta: response.data.meta,
           error: null,
         });
@@ -245,7 +245,9 @@ export const useStudentStore = create<StudentState>((set, get) => ({
   deleteStudent: async (id: string) => {
     set({ isLoading: true });
     try {
-      await axiosInstance.delete(`/admin/students/${id}`);
+      console.log(`Making DELETE request to: /admin/students/${id}`);
+      const response = await axiosInstance.delete(`/admin/students/${id}`);
+      console.log("Delete response:", response);
       toast.success("Student deleted successfully");
       // Remove from selected students
       set((state) => ({
@@ -255,6 +257,7 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       await get().fetchStudents();
     } catch (error: any) {
       console.error("Error deleting student:", error);
+      console.error("Error response:", error.response);
       toast.error(error.response?.data?.message || "Failed to delete student");
       throw error;
     } finally {
