@@ -10,7 +10,6 @@ import {
   Hash,
   Upload,
   Loader2,
-  CheckCircle,
   Mail,
 } from "lucide-react";
 import { useStudentStore } from "../../../stores/useStudentStore";
@@ -88,7 +87,7 @@ export default function AdminUpdateStudent({
   const [filteredSections, setFilteredSections] = useState(sections);
   const [filteredPrograms, setFilteredPrograms] = useState(programs);
   const [isFetchingStudent, setIsFetchingStudent] = useState(false);
-  const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [, setOriginalImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Get current student data when modal opens
@@ -146,12 +145,8 @@ export default function AdminUpdateStudent({
         const department = departments.find(
           (dept) => dept.name === student.department
         );
-        const section = sections.find(
-          (sec) => sec.name === student.section
-        );
-        const program = programs.find(
-          (prog) => prog.name === student.program
-        );
+        const section = sections.find((sec) => sec.name === student.section);
+        const program = programs.find((prog) => prog.name === student.program);
 
         setFormData({
           name_kh: student.name_kh || "",
@@ -159,7 +154,9 @@ export default function AdminUpdateStudent({
           email: student.email || "",
           phone: student.phone || "",
           gender: student.gender || "",
-          dob: student.dob ? new Date(student.dob).toISOString().split("T")[0] : "",
+          dob: student.dob
+            ? new Date(student.dob).toISOString().split("T")[0]
+            : "",
           address: student.address || "",
           department_id: department?.id.toString() || "",
           section_id: section?.id.toString() || "",
@@ -194,7 +191,7 @@ export default function AdminUpdateStudent({
     >
   ) => {
     const { name, value, type } = e.target;
-    
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
@@ -247,14 +244,6 @@ export default function AdminUpdateStudent({
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const removeImage = () => {
-    setFormData((prev) => ({ ...prev, image: null }));
-    setImagePreview(originalImage);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
     }
   };
 
@@ -348,14 +337,14 @@ export default function AdminUpdateStudent({
       // If there's a new image, we need to send it via FormData
       if (formData.image) {
         const formDataToSend = new FormData();
-        
+
         // Append all fields
         Object.entries(updateData).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
             formDataToSend.append(key, value.toString());
           }
         });
-        
+
         // Append image
         formDataToSend.append("image", formData.image);
 
@@ -364,15 +353,14 @@ export default function AdminUpdateStudent({
         // No new image, send as JSON
         await updateStudent(studentId, updateData);
       }
-      
+
       // Trigger success callback
       if (onSuccess) {
         onSuccess();
       }
-      
+
       // Close modal
       onClose();
-      
     } catch (error: any) {
       console.error("Error updating student:", error);
       toast.error(error.response?.data?.message || "Failed to update student");
@@ -416,9 +404,7 @@ export default function AdminUpdateStudent({
         <div className="relative bg-white px-6 py-5 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <User className="w-6 h-6 text-[#131C2E]" />
-            <h2 className="text-2xl font-bold text-gray-900">
-              Edit Student
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">Edit Student</h2>
           </div>
 
           <button
@@ -434,7 +420,9 @@ export default function AdminUpdateStudent({
           {isFetchingStudent ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#131C2E]"></div>
-              <span className="ml-3 text-gray-600">Loading student data...</span>
+              <span className="ml-3 text-gray-600">
+                Loading student data...
+              </span>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -454,15 +442,6 @@ export default function AdminUpdateStudent({
                       </div>
                     )}
                   </div>
-                  {imagePreview && (
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
                 </div>
 
                 <input
@@ -509,13 +488,13 @@ export default function AdminUpdateStudent({
                       onChange={handleInputChange}
                       placeholder="Enter Khmer name"
                       className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                        errors.name_kh
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        errors.name_kh ? "border-red-500" : "border-gray-300"
                       }`}
                     />
                     {errors.name_kh && (
-                      <p className="text-sm text-red-600 mt-1">{errors.name_kh}</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        {errors.name_kh}
+                      </p>
                     )}
                   </div>
 
@@ -530,13 +509,13 @@ export default function AdminUpdateStudent({
                       onChange={handleInputChange}
                       placeholder="Enter English name"
                       className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                        errors.name_en
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        errors.name_en ? "border-red-500" : "border-gray-300"
                       }`}
                     />
                     {errors.name_en && (
-                      <p className="text-sm text-red-600 mt-1">{errors.name_en}</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        {errors.name_en}
+                      </p>
                     )}
                   </div>
 
@@ -553,14 +532,14 @@ export default function AdminUpdateStudent({
                         onChange={handleInputChange}
                         placeholder="student@example.com"
                         className={`w-full pl-12 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                          errors.email
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          errors.email ? "border-red-500" : "border-gray-300"
                         }`}
                       />
                     </div>
                     {errors.email && (
-                      <p className="text-sm text-red-600 mt-1">{errors.email}</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        {errors.email}
+                      </p>
                     )}
                   </div>
 
@@ -577,14 +556,14 @@ export default function AdminUpdateStudent({
                         onChange={handleInputChange}
                         placeholder="+855 12 345 678"
                         className={`w-full pl-12 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                          errors.phone
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          errors.phone ? "border-red-500" : "border-gray-300"
                         }`}
                       />
                     </div>
                     {errors.phone && (
-                      <p className="text-sm text-red-600 mt-1">{errors.phone}</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        {errors.phone}
+                      </p>
                     )}
                   </div>
 
@@ -600,9 +579,7 @@ export default function AdminUpdateStudent({
                         value={formData.dob}
                         onChange={handleInputChange}
                         className={`w-full pl-12 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                          errors.dob
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          errors.dob ? "border-red-500" : "border-gray-300"
                         }`}
                       />
                     </div>
@@ -634,7 +611,9 @@ export default function AdminUpdateStudent({
                       ))}
                     </div>
                     {errors.gender && (
-                      <p className="text-sm text-red-600 mt-1">{errors.gender}</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        {errors.gender}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -650,13 +629,13 @@ export default function AdminUpdateStudent({
                     placeholder="Enter full address"
                     rows={2}
                     className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                      errors.address
-                        ? "border-red-500"
-                        : "border-gray-300"
+                      errors.address ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.address && (
-                    <p className="text-sm text-red-600 mt-1">{errors.address}</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.address}
+                    </p>
                   )}
                 </div>
               </div>
