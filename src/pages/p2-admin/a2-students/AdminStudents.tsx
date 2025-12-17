@@ -13,7 +13,8 @@ import {
 import toast from "react-hot-toast";
 import { useStudentStore } from "../../../stores/useStudentStore";
 import StudentViewDetail from "./AdminStudentDetail";
-import CreateStudent from "./CreateStudent";
+import AdminCreateStudent from "./AdminCreateStudent";
+import AdminUpdateStudent from "./AdminUpdateStudent";
 
 export default function AdminStudents() {
   const {
@@ -54,8 +55,22 @@ export default function AdminStudents() {
   const genders = ["Male", "Female"];
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
 
-  // Add state for the modal in the component:
+  //  handler for opening update modal:
+  const handleEditStudent = (studentId: string) => {
+    setEditingStudentId(studentId);
+    setUpdateModalOpen(true);
+  };
+
+  // handler for closing update modal:
+  const handleCloseUpdateModal = () => {
+    setUpdateModalOpen(false);
+    setEditingStudentId(null);
+  };
+
+  // state for the modal in the component:
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null
@@ -593,7 +608,10 @@ export default function AdminStudents() {
                         <Eye className="w-4 h-4" />
                       </button>
 
-                      <button className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleEditStudent(student.id)}
+                        className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
@@ -627,7 +645,7 @@ export default function AdminStudents() {
       )}
 
       {/* Create Student Modal */}
-      <CreateStudent
+      <AdminCreateStudent
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSuccess={() => {
@@ -635,6 +653,18 @@ export default function AdminStudents() {
           fetchStudents();
         }}
       />
+      {/* Update Student Modal */}
+      {editingStudentId && (
+        <AdminUpdateStudent
+          studentId={editingStudentId}
+          isOpen={updateModalOpen}
+          onClose={handleCloseUpdateModal}
+          onSuccess={() => {
+            // Refresh the student list after successful update
+            fetchStudents();
+          }}
+        />
+      )}
       {/* Pagination */}
       {meta && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 gap-4">

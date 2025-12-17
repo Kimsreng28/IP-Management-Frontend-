@@ -15,6 +15,12 @@ interface Student {
   grade?: string;
   student_year?: number;
   academic_year?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  image?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface AcademicYear {
@@ -92,7 +98,7 @@ interface StudentState {
   fetchStudents: (params?: Partial<FilterParams>) => Promise<void>;
   fetchStudentById: (id: string) => Promise<Student | null>;
   createStudent: (data: FormData) => Promise<void>;
-  updateStudent: (id: string, data: Partial<Student>) => Promise<void>;
+  updateStudent: (id: string, data: Partial<Student> | FormData) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
   deleteMultipleStudents: (ids: string[]) => Promise<void>;
 
@@ -229,21 +235,31 @@ export const useStudentStore = create<StudentState>((set, get) => ({
 
 
   // Update student
-  updateStudent: async (id: string, data: Partial<Student>) => {
-    set({ isLoading: true });
-    try {
-      await axiosInstance.put(`/admin/students/${id}`, data);
-      toast.success("Student updated successfully");
-      // Refresh the list
-      await get().fetchStudents();
-    } catch (error: any) {
-      console.error("Error updating student:", error);
-      toast.error(error.response?.data?.message || "Failed to update student");
-      throw error;
-    } finally {
-      set({ isLoading: false });
+ updateStudent: async (id: string, data: Partial<Student> | FormData) => {
+  set({ isLoading: true });
+  try {
+    if (data instanceof FormData) {
+      // Handle FormData (for updates with image)
+      await axiosInstance.patch(`/admin/students/${id}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } else {
+      // Handle regular JSON data
+      await axiosInstance.patch(`/admin/students/${id}`, data);
     }
-  },
+    toast.success("Student updated successfully");
+    // Refresh the list
+    await get().fetchStudents();
+  } catch (error: any) {
+    console.error("Error updating student:", error);
+    toast.error(error.response?.data?.message || "Failed to update student");
+    throw error;
+  } finally {
+    set({ isLoading: false });
+  }
+},
 
   // Delete student
   deleteStudent: async (id: string) => {
