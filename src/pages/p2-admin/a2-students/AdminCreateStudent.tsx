@@ -1,4 +1,3 @@
-// CreateStudent.tsx
 import { useState, useEffect, useRef } from "react";
 import {
   X,
@@ -49,7 +48,7 @@ interface FormErrors {
   image?: string;
 }
 
-export default function CreateStudent({
+export default function AdminCreateStudent({
   isOpen,
   onClose,
   onSuccess,
