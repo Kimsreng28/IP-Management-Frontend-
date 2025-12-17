@@ -703,13 +703,6 @@ export default function CreateStudent({
                     </p>
                   )}
                 </div>
-
-                {/* Note about auto-generated fields */}
-                <div className="md:col-span-2 mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-700">
-                    <span className="font-medium">Note:</span> Student ID, Email, and Academic Year will be automatically generated.
-                  </p>
-                </div>
               </div>
             </div>
           </form>
