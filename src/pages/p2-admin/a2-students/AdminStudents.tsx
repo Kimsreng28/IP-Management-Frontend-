@@ -13,6 +13,7 @@ import {
 import toast from "react-hot-toast";
 import { useStudentStore } from "../../../stores/useStudentStore";
 import StudentViewDetail from "./AdminStudentDetail";
+import CreateStudent from "./CreateStudent";
 
 export default function AdminStudents() {
   const {
@@ -51,6 +52,8 @@ export default function AdminStudents() {
   } = useStudentStore();
 
   const genders = ["Male", "Female"];
+
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Add state for the modal in the component:
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -249,16 +252,17 @@ export default function AdminStudents() {
             )}
 
             <button
+              onClick={() => setCreateModalOpen(true)}
               className="
-                flex items-center justify-center gap-2
-                px-6 py-3
-                bg-[#131C2E] text-white font-medium 
-                rounded-lg
-                hover:bg-[#1B2742]
-                active:bg-[#0E1524]
-                transition-colors 
-                shadow-sm
-              "
+            flex items-center justify-center gap-2
+            px-6 py-3
+            bg-[#131C2E] text-white font-medium 
+            rounded-lg
+            hover:bg-[#1B2742]
+            active:bg-[#0E1524]
+            transition-colors 
+            shadow-sm
+          "
             >
               <Plus className="w-5 h-5" />
               <span>Add Student</span>
@@ -613,7 +617,7 @@ export default function AdminStudents() {
         </table>
       </div>
 
-      {/* Open Modal */}
+      {/* View Student Modal */}
       {selectedStudentId && (
         <StudentViewDetail
           studentId={selectedStudentId}
@@ -621,6 +625,16 @@ export default function AdminStudents() {
           onClose={handleCloseViewModal}
         />
       )}
+
+      {/* Create Student Modal */}
+      <CreateStudent
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => {
+          // Refresh the student list after successful creation
+          fetchStudents();
+        }}
+      />
       {/* Pagination */}
       {meta && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 gap-4">

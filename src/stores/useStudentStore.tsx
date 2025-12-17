@@ -91,7 +91,7 @@ interface StudentState {
   // Actions
   fetchStudents: (params?: Partial<FilterParams>) => Promise<void>;
   fetchStudentById: (id: string) => Promise<Student | null>;
-  createStudent: (data: Partial<Student>) => Promise<void>;
+  createStudent: (data: FormData) => Promise<void>;
   updateStudent: (id: string, data: Partial<Student>) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
   deleteMultipleStudents: (ids: string[]) => Promise<void>;
@@ -208,21 +208,25 @@ export const useStudentStore = create<StudentState>((set, get) => ({
   },
 
   // Create student
-  createStudent: async (data: Partial<Student>) => {
-    set({ isLoading: true });
-    try {
-      await axiosInstance.post("/admin/students", data);
-      toast.success("Student created successfully");
-      // Refresh the list
-      await get().fetchStudents();
-    } catch (error: any) {
-      console.error("Error creating student:", error);
-      toast.error(error.response?.data?.message || "Failed to create student");
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+ createStudent: async (data: FormData) => {
+  set({ isLoading: true });
+  try {
+    await axiosInstance.post("/admin/students", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    toast.success("Student created successfully");
+    await get().fetchStudents();
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Failed to create student");
+    throw error;
+  } finally {
+    set({ isLoading: false });
+  }
+},
+
 
   // Update student
   updateStudent: async (id: string, data: Partial<Student>) => {
