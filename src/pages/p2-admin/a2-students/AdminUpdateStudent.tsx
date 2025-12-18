@@ -87,7 +87,7 @@ export default function AdminUpdateStudent({
   const [filteredSections, setFilteredSections] = useState(sections);
   const [filteredPrograms, setFilteredPrograms] = useState(programs);
   const [isFetchingStudent, setIsFetchingStudent] = useState(false);
-  const [, setOriginalImage] = useState<string | null>(null);
+  const [, setOriginalImage] = useState<string | null>(null); // Changed: use this state
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Get current student data when modal opens
@@ -134,6 +134,26 @@ export default function AdminUpdateStudent({
     }
   }, [formData.department_id, sections, programs]);
 
+  // Function to handle image URL for preview
+  const getImageUrl = (imageUrl: string | null | undefined) => {
+    if (!imageUrl) return null;
+
+    if (imageUrl === "src/public/images/avatar.jpg") {
+      return "/src/assets/images/avatar.jpg"; 
+    }
+
+    // Handle external URLs
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+      return imageUrl;
+    }
+
+    const BACKEND_URL =
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
+    return `${BACKEND_URL}${
+      imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl
+    }`;
+  };
+
   const fetchStudentData = async () => {
     if (!studentId) return;
 
@@ -168,7 +188,16 @@ export default function AdminUpdateStudent({
         // Set image preview if available
         if (student.image) {
           setOriginalImage(student.image);
-          setImagePreview(student.image);
+
+          // Get the image URL using the helper function
+          const imageUrl = getImageUrl(student.image);
+          setImagePreview(imageUrl);
+        } else {
+          // No image, create a placeholder with the first letter
+          const firstLetter = student.name_en?.[0]?.toUpperCase() || "?";
+          setImagePreview(
+            `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect fill='%23e5e7eb' width='128' height='128'/%3E%3Ctext x='50%25' y='50%25' font-size='48' text-anchor='middle' dy='.3em' fill='%239ca3af'%3E${firstLetter}%3C/text%3E%3C/svg%3E`
+          );
         }
       }
     } catch (error) {
@@ -191,6 +220,11 @@ export default function AdminUpdateStudent({
     >
   ) => {
     const { name, value, type } = e.target;
+
+    // Don't allow email changes
+    if (name === "email") {
+      return;
+    }
 
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
@@ -334,7 +368,7 @@ export default function AdminUpdateStudent({
         student_year: parseInt(formData.student_year),
       };
 
-      // If there's a new image, we need to send it via FormData
+      // If there's a new image, 
       if (formData.image) {
         const formDataToSend = new FormData();
 
@@ -435,6 +469,14 @@ export default function AdminUpdateStudent({
                         src={imagePreview}
                         alt="Profile preview"
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to a letter-based avatar if image fails to load
+                          const firstLetter =
+                            formData.name_en?.[0]?.toUpperCase() || "?";
+                          (
+                            e.target as HTMLImageElement
+                          ).src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect fill='%23e5e7eb' width='128' height='128'/%3E%3Ctext x='50%25' y='50%25' font-size='48' text-anchor='middle' dy='.3em' fill='%239ca3af'%3E${firstLetter}%3C/text%3E%3C/svg%3E`;
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-blue-100 to-purple-100">
@@ -531,11 +573,15 @@ export default function AdminUpdateStudent({
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="student@example.com"
-                        className={`w-full pl-12 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors ${
-                          errors.email ? "border-red-500" : "border-gray-300"
-                        }`}
+                        readOnly
+                        disabled
+                        className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed outline-none"
+                        title="Email cannot be changed"
                       />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Email address cannot be modified after registration
+                    </p>
                     {errors.email && (
                       <p className="text-sm text-red-600 mt-1">
                         {errors.email}
