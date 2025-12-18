@@ -55,19 +55,24 @@ export default function StudentViewDetail({
     }
   };
 
-  const getImageUrl = (imageUrl: string | null | undefined) => {
-    if (!imageUrl) return null;
+ const getImageUrl = (imageUrl: string | null | undefined) => {
+  if (!imageUrl) return null;
 
-    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
-      return imageUrl;
-    }
+  if (imageUrl === "src/public/images/avatar.jpg") {
+    return "/src/assets/images/avatar.jpg"; 
+  }
 
-    const BACKEND_URL =
-      import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
-    return `${BACKEND_URL}${
-      imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl
-    }`;
-  };
+  // Handle external URLs
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
+  return `${BACKEND_URL}${
+    imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl
+  }`;
+};
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -181,11 +186,6 @@ export default function StudentViewDetail({
                     >
                       {student.gender}
                     </span>
-                    {student.grade && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                        Grade: {student.grade}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
