@@ -87,7 +87,7 @@ export default function AdminUpdateStudent({
   const [filteredSections, setFilteredSections] = useState(sections);
   const [filteredPrograms, setFilteredPrograms] = useState(programs);
   const [isFetchingStudent, setIsFetchingStudent] = useState(false);
-  const [originalImage, setOriginalImage] = useState<string | null>(null); // Changed: use this state
+  const [, setOriginalImage] = useState<string | null>(null); // Changed: use this state
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Get current student data when modal opens
@@ -138,11 +138,8 @@ export default function AdminUpdateStudent({
   const getImageUrl = (imageUrl: string | null | undefined) => {
     if (!imageUrl) return null;
 
-    // Check if it's the specific backend path that needs to be mapped to frontend
     if (imageUrl === "src/public/images/avatar.jpg") {
-      // Map to frontend assets path
-      // Assuming you have an avatar image in your public folder
-      return "/src/assets/images/avatar.jpg"; // Or use a default placeholder
+      return "/src/assets/images/avatar.jpg"; 
     }
 
     // Handle external URLs
@@ -150,7 +147,6 @@ export default function AdminUpdateStudent({
       return imageUrl;
     }
 
-    // For other backend paths, construct URL with backend
     const BACKEND_URL =
       import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
     return `${BACKEND_URL}${
@@ -361,7 +357,7 @@ export default function AdminUpdateStudent({
       const updateData: any = {
         name_kh: formData.name_kh,
         name_en: formData.name_en,
-        email: formData.email, // Email is included but won't be changed
+        email: formData.email,
         phone: formData.phone,
         gender: formData.gender,
         dob: formData.dob,
@@ -372,7 +368,7 @@ export default function AdminUpdateStudent({
         student_year: parseInt(formData.student_year),
       };
 
-      // If there's a new image, we need to send it via FormData
+      // If there's a new image, 
       if (formData.image) {
         const formDataToSend = new FormData();
 
@@ -483,7 +479,7 @@ export default function AdminUpdateStudent({
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-blue-100 to-purple-100">
                         <User className="w-16 h-16 text-gray-400" />
                       </div>
                     )}
