@@ -34,13 +34,14 @@ interface AuthState {
   login: (data: LoginData) => Promise<void>;
   logout: () => Promise<void>;
   setHasCheckedInitialAuth: (value: boolean) => void;
+  updateUser: (userData: Partial<User>) => void; // Add this method
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       authUser: null,
-      token: null, 
+      token: null,
       isLoggingIn: false,
       isCheckingAuth: false,
       hasCheckedInitialAuth: false,
@@ -50,7 +51,7 @@ export const useAuthStore = create<AuthState>()(
 
         if (!authUser && !token) {
           set({ hasCheckedInitialAuth: true, isCheckingAuth: false });
-          return; 
+          return;
         }
 
         if (authUser) {
@@ -137,6 +138,24 @@ export const useAuthStore = create<AuthState>()(
 
       setHasCheckedInitialAuth: (value: boolean) => {
         set({ hasCheckedInitialAuth: value });
+      },
+
+      // updateUser method
+      updateUser: (userData: Partial<User>) => {
+        console.log('Current authUser before update:', get().authUser);
+        console.log('User data to merge:', userData);
+
+        set((state) => ({
+          authUser: state.authUser ? {
+            ...state.authUser,
+            ...userData,
+            id: state.authUser.id,
+            email: state.authUser.email,
+            role: state.authUser.role,
+          } : null,
+        }));
+
+        console.log('Updated authUser:', get().authUser);
       },
     }),
     {

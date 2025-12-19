@@ -1,0 +1,118 @@
+import React, { useState, useRef } from 'react';
+import { Camera, Loader2, User } from 'lucide-react';
+
+interface ProfileImageUploadProps {
+    currentImage?: string;
+    onImageUpload: (file: File) => Promise<void>;
+    isLoading?: boolean;
+}
+
+export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
+    currentImage,
+    onImageUpload,
+    isLoading = false,
+}) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, GIF, WebP)');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('Image size should be less than 5MB');
+            return;
+        }
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload image
+        try {
+            await onImageUpload(file);
+            // Clear preview after successful upload
+            setPreviewUrl(null);
+        } catch (error) {
+            setPreviewUrl(null);
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    const handleClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const placeholderAvatar = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23e5e7eb'/%3E%3Cpath d='M50 30a20 20 0 1 0 0 40 20 20 0 0 0 0-40zm0 5a15 15 0 1 1 0 30 15 15 0 0 1 0-30zm0 24a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9z' fill='%239ca3af'/%3E%3C/svg%3E`;
+
+    return (
+        <div className="relative group">
+            <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg cursor-pointer mx-auto">
+                <img
+                    src={previewUrl || currentImage || placeholderAvatar}
+                    alt="Profile"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    onClick={handleClick}
+                    onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = placeholderAvatar;
+                    }}
+                />
+                <div
+                    className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
+                    onClick={handleClick}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleClick();
+                        }
+                    }}
+                >
+                    <Camera className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                </div>
+                {isLoading && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <Loader2 className="w-6 h-6 md:w-8 md:h-8 text-white animate-spin" />
+                    </div>
+                )}
+                {!currentImage && !previewUrl && (
+                    <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                        <User className="w-12 h-12 md:w-16 md:h-16 text-gray-400" />
+                    </div>
+                )}
+            </div>
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                className="hidden"
+                id="avatar-upload"
+                key={Date.now()}
+            />
+            <div className="mt-3 text-xs md:text-sm text-gray-600 text-center">
+                <p className="cursor-pointer hover:text-blue-600" onClick={handleClick}>
+                    Click to upload
+                </p>
+                <p className="text-xs text-gray-500">Max 5MB • JPEG, PNG, GIF, WebP</p>
+            </div>
+        </div>
+    );
+};
