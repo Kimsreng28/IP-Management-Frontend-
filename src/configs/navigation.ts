@@ -1,6 +1,7 @@
 import { LayoutDashboard, Calendar, BookOpen, User, Users, BarChart, LogIn } from "lucide-react";
 import { lazy } from "react";
 import type { ComponentType } from "react";
+import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
 
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage")); 
 const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
@@ -74,6 +75,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "Student",
       roles: ["ADMIN"],
       component: AdminStudents,
+    },
+     {
+      path: "/admin/teachers",
+      icon: Users,
+      label: "Teacher",
+      roles: ["ADMIN"],
+      component: AdminTeachers,
     },
     {
       path: "/admin/profile",
