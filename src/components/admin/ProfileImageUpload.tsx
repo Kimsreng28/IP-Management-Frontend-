@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Loader2, User } from 'lucide-react';
+import { Camera, Loader2, User, Upload } from 'lucide-react';
 
 interface ProfileImageUploadProps {
     currentImage?: string;
@@ -47,27 +47,29 @@ export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
             setPreviewUrl(null);
         } catch (error) {
             setPreviewUrl(null);
-
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
         }
     };
 
-    const handleClick = () => {
+    const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
 
     const placeholderAvatar = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23e5e7eb'/%3E%3Cpath d='M50 30a20 20 0 1 0 0 40 20 20 0 0 0 0-40zm0 5a15 15 0 1 1 0 30 15 15 0 0 1 0-30zm0 24a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9z' fill='%239ca3af'/%3E%3C/svg%3E`;
 
+    // Determine if we have an image (current or preview)
+    const hasImage = !!(currentImage || previewUrl);
+
     return (
-        <div className="relative group">
-            <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg cursor-pointer mx-auto">
+        <div className="relative group flex flex-col items-center">
+            <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg cursor-pointer">
                 <img
                     src={previewUrl || currentImage || placeholderAvatar}
                     alt="Profile"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    onClick={handleClick}
+                    onClick={triggerFileInput}
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = placeholderAvatar;
@@ -75,13 +77,13 @@ export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
                 />
                 <div
                     className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
-                    onClick={handleClick}
+                    onClick={triggerFileInput}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            handleClick();
+                            triggerFileInput();
                         }
                     }}
                 >
@@ -107,11 +109,17 @@ export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
                 id="avatar-upload"
                 key={Date.now()}
             />
-            <div className="mt-3 text-xs md:text-sm text-gray-600 text-center">
-                <p className="cursor-pointer hover:text-blue-600" onClick={handleClick}>
-                    Click to upload
-                </p>
-                <p className="text-xs text-gray-500">Max 5MB • JPEG, PNG, GIF, WebP</p>
+            <div className="mt-3 flex flex-col items-center">
+                <button
+                    type="button"
+                    onClick={triggerFileInput}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    disabled={isLoading}
+                >
+                    <Upload className="w-4 h-4" />
+                    {hasImage ? "Change Photo" : "Upload New Photo"}
+                </button>
+                <p className="text-xs text-gray-500 mt-2 text-center">Max 5MB • JPEG, PNG, GIF, WebP</p>
             </div>
         </div>
     );

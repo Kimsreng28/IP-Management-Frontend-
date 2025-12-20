@@ -41,3 +41,6 @@ export interface ChangePasswordResponseDto {
   success: boolean;
   message: string;
 }
+export interface UseAdminProfileOptions {
+  adminId?: string;
+}
