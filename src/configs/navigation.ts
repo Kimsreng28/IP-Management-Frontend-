@@ -1,36 +1,53 @@
-import { LayoutDashboard, Calendar, BookOpen, User, Users, BarChart, LogIn } from "lucide-react";
+import {
+  LayoutDashboard,
+  Calendar,
+  BookOpen,
+  User,
+  Users,
+  BarChart,
+  LogIn,
+} from "lucide-react";
 import { lazy } from "react";
 import type { ComponentType } from "react";
 import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
+import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
 
-const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage")); 
+const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage"));
 const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
-const AdminStudents = lazy(() => import("../pages/p2-admin/a2-students/AdminStudents"));
+const AdminStudents = lazy(
+  () => import("../pages/p2-admin/a2-students/AdminStudents")
+);
 const AdminProfile = lazy(() => import("../pages/p2-admin/AdminProfile"));
 
 const HODDashboard = lazy(() => import("../pages/p3-hod/HODDashboard"));
 const HodStaff = lazy(() => import("../pages/p3-hod/HodStaff"));
 const HodReports = lazy(() => import("../pages/p3-hod/HodReports"));
 
-const TeacherDashboard = lazy(() => import("../pages/p4-teacher/TeacherDashboard"));
-const TeacherAttendance = lazy(() => import("../pages/p4-teacher/TeacherAttendance"));
+const TeacherDashboard = lazy(
+  () => import("../pages/p4-teacher/TeacherDashboard")
+);
+const TeacherAttendance = lazy(
+  () => import("../pages/p4-teacher/TeacherAttendance")
+);
 const TeacherCourses = lazy(() => import("../pages/p4-teacher/TeacherCourses"));
 
-const StudentDashboard = lazy(() => import("../pages/p5-student/StudentDashboard"));
-const StudentAttendance = lazy(() => import("../pages/p5-student/StudentAttendance"));
+const StudentDashboard = lazy(
+  () => import("../pages/p5-student/StudentDashboard")
+);
+const StudentAttendance = lazy(
+  () => import("../pages/p5-student/StudentAttendance")
+);
 const StudentCourses = lazy(() => import("../pages/p5-student/StudentCourses"));
-
 
 export interface RouteConfig {
   path: string;
-  icon?: any; 
+  icon?: any;
   label: string;
-  roles: string[]; 
+  roles: string[];
   component: ComponentType<any>;
   exact?: boolean;
   children?: RouteConfig[];
 }
-
 
 export const routeConfigs: Record<string, RouteConfig[]> = {
   // PUBLIC ROUTES - accessible to everyone (including unauthenticated users)
@@ -39,7 +56,7 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       path: "/login",
       icon: LogIn,
       label: "Login",
-      roles: [], 
+      roles: [],
       component: LoginPage,
       exact: true,
     },
@@ -76,12 +93,19 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       roles: ["ADMIN"],
       component: AdminStudents,
     },
-     {
+    {
       path: "/admin/teachers",
       icon: Users,
       label: "Teacher",
       roles: ["ADMIN"],
       component: AdminTeachers,
+    },
+    {
+      path: "/admin/hods",
+      icon: Users,
+      label: "Heads of Department",
+      roles: ["ADMIN"],
+      component: AdminHods,
     },
     {
       path: "/admin/profile",
@@ -169,9 +193,9 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
 export function getAllRoutes(): RouteConfig[] {
   return [
     ...(routeConfigs.PUBLIC || []),
-    ...Object.values(routeConfigs).flat().filter(route => 
-      route.roles.length > 0 
-    )
+    ...Object.values(routeConfigs)
+      .flat()
+      .filter((route) => route.roles.length > 0),
   ];
 }
 
@@ -182,10 +206,10 @@ export function getRoutesByRole(role: string): RouteConfig[] {
 export function hasRouteAccess(path: string, userRole: string): boolean {
   const allRoutes = getAllRoutes();
   const route = allRoutes.find((r) => r.path === path);
-  
+
   if (route && route.roles.length === 0) {
     return true;
   }
-  
+
   return route ? route.roles.includes(userRole) : false;
 }
