@@ -5,7 +5,6 @@ import {
     User,
     Mail,
     Phone,
-    UserCircle,
     Calendar,
     MapPin,
     Globe
@@ -66,168 +65,179 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                {/* Name (Khmer) */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <User className="w-4 h-4 text-gray-500" />
-                        <span>Name (Khmer)</span>
-                    </label>
+            {/* Personal Information Section */}
+            <div className="bg-gray-50 rounded-lg p-5 space-y-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <User className="w-5 h-5 text-[#131C2E]" />
+                    Personal Information
+                </h4>
 
-                    <input
-                        type="text"
-                        name="name_kh"
-                        value={formData.name_kh}
-                        onChange={handleChange}
-                        className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-gray-400"
-                        required
-                        placeholder="Enter Khmer name"
-                    />
-
-                </div>
-
-                {/* Name (English) */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <Globe className="w-4 h-4 text-gray-500" />
-                        <span>Name (English)</span>
-                    </label>
-
-                    <input
-                        type="text"
-                        name="name_en"
-                        value={formData.name_en}
-                        onChange={handleChange}
-                        className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-gray-400"
-                        required
-                        placeholder="Enter English name"
-                    />
-
-                </div>
-
-                {/* Email */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <Mail className="w-4 h-4 text-gray-500" />
-                        <span>Email Address</span>
-                    </label>
-
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 cursor-not-allowed"
-                        required
-                        disabled
-                        placeholder="your@email.com"
-                    />
-
-                    <p className="text-xs text-gray-500 flex items-center gap-1">
-                        <span className='text-red-500'>*</span>
-                        Email cannot be changed
-                    </p>
-                </div>
-
-                {/* Phone */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <Phone className="w-4 h-4 text-gray-500" />
-                        <span>Phone Number</span>
-                    </label>
-
-                    <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-gray-400"
-                        required
-                        placeholder="Enter phone number"
-                    />
-
-                </div>
-
-                {/* Gender */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <UserCircle className="w-4 h-4 text-gray-500" />
-                        <span>Gender</span>
-                    </label>
-
-                    <select
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleChange}
-                        className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-gray-400 appearance-none bg-white"
-                    >
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Name (Khmer) */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Khmer Name *
+                        </label>
+                        <div className="relative">
+                            <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                            <input
+                                type="text"
+                                name="name_kh"
+                                value={formData.name_kh}
+                                onChange={handleChange}
+                                placeholder="Enter Khmer name"
+                                className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors"
+                                required
+                            />
+                        </div>
                     </div>
 
+                    {/* Name (English) */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            English Name *
+                        </label>
+                        <div className="relative">
+                            <Globe className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                            <input
+                                type="text"
+                                name="name_en"
+                                value={formData.name_en}
+                                onChange={handleChange}
+                                placeholder="Enter English name"
+                                className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Email *
+                        </label>
+                        <div className="relative">
+                            <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                readOnly
+                                disabled
+                                className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed outline-none"
+                                title="Email cannot be changed"
+                            />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Email address cannot be modified
+                        </p>
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Phone Number *
+                        </label>
+                        <div className="relative">
+                            <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                placeholder="+855 12 345 678"
+                                className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* Date of Birth */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Date of Birth *
+                        </label>
+                        <div className="relative">
+                            <Calendar className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                            <input
+                                type="date"
+                                name="dob"
+                                value={formData.dob}
+                                onChange={handleChange}
+                                className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* Gender */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Gender *
+                        </label>
+                        <div className="flex gap-3">
+                            {(["Male", "Female"] as const).map((gender) => (
+                                <button
+                                    key={gender}
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, gender }))}
+                                    className={`flex-1 py-2.5 px-4 rounded-lg border transition-colors font-medium ${formData.gender === gender
+                                            ? gender === "Male"
+                                                ? "bg-blue-100 text-blue-800 border-blue-300"
+                                                : "bg-pink-100 text-pink-800 border-pink-300"
+                                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                                        }`}
+                                >
+                                    {gender}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
-                {/* Date of Birth */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                        <span>Date of Birth</span>
+                {/* Address */}
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Address *
                     </label>
-
-                    <input
-                        type="date"
-                        name="dob"
-                        value={formData.dob}
-                        onChange={handleChange}
-                        className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-gray-400 text-gray-700"
-                        required
-                    />
-
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                        <textarea
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            placeholder="Enter full address"
+                            rows={2}
+                            className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E] outline-none transition-colors"
+                            required
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Address */}
-            <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    <span>Address</span>
-                </label>
-
-                <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-gray-400 resize-none"
-                    required
-                    placeholder="Enter your address"
-                />
-
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end pt-4 border-t border-gray-100">
+            {/* Footer Buttons */}
+            <div className="border-t border-gray-200 pt-4 flex justify-end gap-3">
+                <button
+                    type="button"
+                    onClick={() => {/* Close modal logic here */ }}
+                    className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    disabled={isLoading}
+                >
+                    Cancel
+                </button>
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="px-3 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center gap-2 text-sm sm:text-base font-medium"
+                    className="px-6 py-2.5 bg-[#131C2E] text-white rounded-lg hover:bg-[#1B2742] transition-colors font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                            <span>Saving Changes...</span>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Saving...
                         </>
                     ) : (
-                        <>
-                            <Save className="w-4 h-4 sm:w-5 sm:h-5" />
-                            <span>Save Change</span>
-                        </>
+                        "Update Profile"
                     )}
                 </button>
             </div>

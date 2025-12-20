@@ -11,14 +11,23 @@ export const useAdminProfile = () => {
   const [profile, setProfile] = useState<AdminProfileDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { updateUser } = useAuthStore();
+  const { authUser, updateUser } = useAuthStore();
 
-  // Fetch admin profile
+  // Helper to get current user ID
+  const getCurrentUserId = useCallback(() => {
+    if (!authUser?.id) {
+      throw new Error("User not authenticated");
+    }
+    return authUser.id;
+  }, [authUser]);
+
+  // Fetch current admin profile
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await adminProfileApi.getProfile();
+      const userId = getCurrentUserId();
+      const response = await adminProfileApi.getProfile(userId);
       if (response.success) {
         setProfile(response.data);
       }
@@ -31,16 +40,17 @@ export const useAdminProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getCurrentUserId]);
 
-  // Update profile
+  // Update current profile
   const updateProfile = useCallback(
     async (data: UpdateAdminProfileDto) => {
       try {
         setLoading(true);
         setError(null);
+        const userId = getCurrentUserId();
         console.log("Updating profile with data:", data);
-        const response = await adminProfileApi.updateProfile(data);
+        const response = await adminProfileApi.updateProfile(userId, data);
         console.log("Update response:", response);
 
         if (response.success) {
@@ -62,33 +72,41 @@ export const useAdminProfile = () => {
         setLoading(false);
       }
     },
-    [updateUser]
+    [getCurrentUserId, updateUser]
   );
 
-  // Change password
-  const changePassword = useCallback(async (data: ChangePasswordDto) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await adminProfileApi.changePassword(data);
-      return response;
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || "Failed to change password";
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Change current password
+  const changePassword = useCallback(
+    async (data: ChangePasswordDto) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const userId = getCurrentUserId();
+        const response = await adminProfileApi.changePassword(userId, data);
+        return response;
+      } catch (err: any) {
+        const errorMessage =
+          err.response?.data?.message || "Failed to change password";
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [getCurrentUserId]
+  );
 
-  // Update profile image
+  // Update current profile image
   const updateProfileImage = useCallback(
     async (imageFile: File) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await adminProfileApi.updateProfileImage(imageFile);
+        const userId = getCurrentUserId();
+        const response = await adminProfileApi.updateProfileImage(
+          userId,
+          imageFile
+        );
         if (response.success) {
           setProfile(response.data);
           // Update user in Zustand store
@@ -106,8 +124,14 @@ export const useAdminProfile = () => {
         setLoading(false);
       }
     },
-    [updateUser]
+    [getCurrentUserId, updateUser]
   );
+
+  // Clear profile data
+  const clearProfile = useCallback(() => {
+    setProfile(null);
+    setError(null);
+  }, []);
 
   return {
     profile,
@@ -117,5 +141,6 @@ export const useAdminProfile = () => {
     updateProfile,
     changePassword,
     updateProfileImage,
+    clearProfile,
   };
 };
