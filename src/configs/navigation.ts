@@ -1,17 +1,23 @@
+// src/configs/navigation.ts
 import {
-  LayoutDashboard,
-  Calendar,
+  BarChart,
   BookOpen,
+  Calendar,
+  Key,
+  LayoutDashboard,
+  Lock,
+  LogIn,
   User,
   Users,
-  BarChart,
-  LogIn,
 } from "lucide-react";
-import { lazy } from "react";
 import type { ComponentType } from "react";
-import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
-import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
+import { lazy } from "react";
 
+// Import all existing components
+import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
+import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
+
+// Lazy load existing pages
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage"));
 const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
 const AdminStudents = lazy(
@@ -39,6 +45,15 @@ const StudentAttendance = lazy(
 );
 const StudentCourses = lazy(() => import("../pages/p5-student/StudentCourses"));
 
+// Lazy load new password-related pages
+const ForgotPasswordPage = lazy(
+  () => import("../pages/p1-auth/ForgotPasswordPage")
+);
+const ResetPasswordPage = lazy(
+  () => import("../pages/p1-auth/ResetPasswordPage")
+);
+
+// Define interface for route configurations
 export interface RouteConfig {
   path: string;
   icon?: any;
@@ -49,8 +64,9 @@ export interface RouteConfig {
   children?: RouteConfig[];
 }
 
+// Define route configurations
 export const routeConfigs: Record<string, RouteConfig[]> = {
-  // PUBLIC ROUTES - accessible to everyone (including unauthenticated users)
+  // PUBLIC ROUTES
   PUBLIC: [
     {
       path: "/login",
@@ -60,20 +76,20 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       component: LoginPage,
       exact: true,
     },
-    // {
-    //   path: "/register",
-    //   icon: UserPlus,
-    //   label: "Register",
-    //   roles: [],
-    //   component: lazy(() => import("../pages/Register")),
-    // },
-    // {
-    //   path: "/forgot-password",
-    //   icon: HelpCircle,
-    //   label: "Forgot Password",
-    //   roles: [],
-    //   component: lazy(() => import("../pages/ForgotPassword")),
-    // },
+    {
+      path: "/forgot-password",
+      icon: Key,
+      label: "Forgot Password",
+      roles: [],
+      component: ForgotPasswordPage,
+    },
+    {
+      path: "/reset-password/:token",
+      icon: Lock,
+      label: "Reset Password",
+      roles: [],
+      component: ResetPasswordPage,
+    },
   ],
 
   // PROTECTED ROUTES - require authentication

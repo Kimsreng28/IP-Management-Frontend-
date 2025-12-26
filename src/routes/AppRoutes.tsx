@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getAllRoutes } from "../configs/navigation";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useAuthStore } from "../stores/useAuthStore";
+import ProtectedRoute from "./ProtectRoute";
 
 export default function AppRoutes() {
   const { authUser } = useAuthStore();
@@ -38,13 +39,12 @@ export default function AppRoutes() {
             key={route.path}
             path={route.path}
             element={
-              // Public routes (like login) → render directly
-              route.roles.length === 0 ? (
+              <ProtectedRoute
+                allowedRoles={route.roles}
+                userRole={authUser?.role}
+              >
                 <route.component />
-              ) : (
-                // Protected routes → just render the page component
-                <route.component />
-              )
+              </ProtectedRoute>
             }
           />
         ))}
