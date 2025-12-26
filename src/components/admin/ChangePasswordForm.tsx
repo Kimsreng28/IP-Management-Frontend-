@@ -94,7 +94,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
             {success && (
                 <div className="p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg animate-fade-in">
                     <div className="flex items-start sm:items-center gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0 mt-0.5 sm:mt-0" />
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 shrink-0 mt-0.5 sm:mt-0" />
                         <p className="text-sm font-medium text-green-800">Password changed successfully!</p>
                     </div>
                 </div>
@@ -104,7 +104,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
             {error && (
                 <div className="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg animate-fade-in">
                     <div className="flex items-start sm:items-center gap-2 sm:gap-3">
-                        <div className="flex-shrink-0 mt-0.5 sm:mt-0">
+                        <div className="shrink-0 mt-0.5 sm:mt-0">
                             <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                             </svg>
@@ -195,19 +195,19 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-2">
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${formData.newPassword.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                    <div className={`w-2 h-2 rounded-full shrink-0 ${formData.newPassword.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`} />
                                     <span className="text-xs text-gray-600">8+ characters</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${/[A-Z]/.test(formData.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                    <div className={`w-2 h-2 rounded-full shrink-0 ${/[A-Z]/.test(formData.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
                                     <span className="text-xs text-gray-600">Uppercase letter</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${/\d/.test(formData.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                    <div className={`w-2 h-2 rounded-full shrink-0 ${/\d/.test(formData.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
                                     <span className="text-xs text-gray-600">Number</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                    <div className={`w-2 h-2 rounded-full shrink-0 ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
                                     <span className="text-xs text-gray-600">Special character</span>
                                 </div>
                             </div>
@@ -249,7 +249,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                     </div>
                     {formData.confirmPassword && formData.newPassword !== formData.confirmPassword && (
                         <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
-                            <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                             </svg>
                             Passwords do not match
