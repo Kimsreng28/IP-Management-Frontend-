@@ -9,9 +9,21 @@ import {
   LogIn,
   User,
   Users,
+<<<<<<< HEAD
+=======
+  BarChart,
+  LogIn,
+  Building2,
+>>>>>>> f8bdb857778a42d2bca2b26511f223513390ddc0
 } from "lucide-react";
 import type { ComponentType } from "react";
+<<<<<<< HEAD
 import { lazy } from "react";
+=======
+import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
+import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
+import AdminDepartments from "../pages/p2-admin/a5-departments/AdminDepartments";
+>>>>>>> f8bdb857778a42d2bca2b26511f223513390ddc0
 
 // Import all existing components
 import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
@@ -122,6 +134,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "Heads of Department",
       roles: ["ADMIN"],
       component: AdminHods,
+    },
+    {
+      path: "/admin/departments",
+      icon: Building2,
+      label: "Department",
+      roles: ["ADMIN"],
+      component: AdminDepartments,
     },
     {
       path: "/admin/profile",
