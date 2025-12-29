@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { X, FileText, Building, Save} from "lucide-react";
 import { useSectionStore } from "../../../stores/useSectionStore";
-import { toast } from "react-hot-toast";
 
 interface SectionCreateProps {
   departmentId: number;
@@ -61,8 +60,6 @@ export default function AdminSectionCreate({
         name: name.trim(),
         description: description.trim(),
       });
-
-      toast.success("Section created successfully");
       resetForm();
       onClose();
       if (onCreateSuccess) {
