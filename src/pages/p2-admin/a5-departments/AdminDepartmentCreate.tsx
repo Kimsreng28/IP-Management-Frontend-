@@ -101,10 +101,10 @@ export default function AdminDepartmentCreate({
         name: name.trim(),
         description: description.trim(),
         hod_user_id: hodUserId,
-        sections: sections.map(section => ({
+        sections: sections.map((section) => ({
           name: section.name.trim(),
-          description: section.description.trim()
-        }))
+          description: section.description.trim(),
+        })),
       };
 
       await createDepartment(departmentData);
@@ -132,7 +132,10 @@ export default function AdminDepartmentCreate({
   };
 
   const handleCancel = () => {
-    if (sections.length > 0 && !confirm('You have unsaved sections. Are you sure you want to cancel?')) {
+    if (
+      sections.length > 0 &&
+      !confirm("You have unsaved sections. Are you sure you want to cancel?")
+    ) {
       return;
     }
     resetForm();
@@ -182,7 +185,8 @@ export default function AdminDepartmentCreate({
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
-                      if (errors.name) setErrors({ ...errors, name: undefined });
+                      if (errors.name)
+                        setErrors({ ...errors, name: undefined });
                     }}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#131C2E] focus:border-transparent text-lg font-semibold text-gray-900 placeholder-gray-400 ${
                       errors.name ? "border-red-300" : "border-gray-300"
@@ -218,7 +222,9 @@ export default function AdminDepartmentCreate({
                     ))}
                   </select>
                   {errors.hod_user_id && (
-                    <p className="mt-1 text-sm text-red-600">{errors.hod_user_id}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.hod_user_id}
+                    </p>
                   )}
                 </div>
               </div>
@@ -245,7 +251,9 @@ export default function AdminDepartmentCreate({
                   placeholder="Enter department description"
                 />
                 {errors.description && (
-                  <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.description}
+                  </p>
                 )}
               </div>
             </div>
@@ -255,9 +263,7 @@ export default function AdminDepartmentCreate({
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Building className="w-5 h-5 text-[#131C2E]" />
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Sections
-                  </h3>
+                  <h3 className="text-xl font-bold text-gray-900">Sections</h3>
                   <span className="bg-gray-200 text-gray-700 text-sm font-medium px-2.5 py-0.5 rounded-full">
                     {sections.length}
                   </span>
@@ -332,9 +338,7 @@ export default function AdminDepartmentCreate({
               {sections.length === 0 ? (
                 <div className="text-center py-8 bg-gray-50 rounded-lg">
                   <User className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">
-                    No sections added yet
-                  </p>
+                  <p className="text-gray-500">No sections added yet</p>
                   <p className="text-gray-400 text-sm mt-1">
                     Add sections to organize this department better
                   </p>
@@ -350,7 +354,7 @@ export default function AdminDepartmentCreate({
                         <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           Section Name
                         </th>
-                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-40">
+                        <th className="px-8 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-40">
                           Actions
                         </th>
                       </tr>
@@ -368,7 +372,7 @@ export default function AdminDepartmentCreate({
                             {section.name}
                           </td>
                           <td className="px-8 py-5 w-40">
-                            <div className="flex items-center justify-end gap-4">
+                            <div className="flex items-center justify-center">
                               <button
                                 onClick={() => handleRemoveSection(index)}
                                 className="p-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -393,7 +397,8 @@ export default function AdminDepartmentCreate({
           <div className="text-sm text-gray-500">
             {sections.length > 0 && (
               <span className="font-medium">
-                {sections.length} section{sections.length !== 1 ? 's' : ''} will be created with this department
+                {sections.length} section{sections.length !== 1 ? "s" : ""} will
+                be created with this department
               </span>
             )}
           </div>
