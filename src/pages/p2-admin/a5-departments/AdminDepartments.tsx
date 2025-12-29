@@ -3,14 +3,8 @@
 import { useEffect, useState } from "react";
 import { Eye, Trash2, Plus, Search } from "lucide-react";
 import { useDepartmentStore } from "../../../stores/useDepartmentStore";
-import toast from "react-hot-toast";
 import AdminDepartmentDetail from "./AdminDepartmentDetail";
 import AdminDepartmentCreate from "./AdminDepartmentCreate";
-
-// Import modals (you'll need to create these)
-// import DepartmentViewDetail from "./AdminDepartmentDetail";
-// import AdminCreateDepartment from "./AdminCreateDepartment";
-// import AdminUpdateDepartment from "./AdminUpdateDepartment";
 
 export default function AdminDepartments() {
   const {
@@ -43,9 +37,7 @@ export default function AdminDepartments() {
   >(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [, setUpdateModalOpen] = useState(false);
-  const [, setEditingDepartmentId] = useState<number | null>(
-    null
-  );
+  const [, setEditingDepartmentId] = useState<number | null>(null);
 
   // Add handlers for opening/closing the view modal
   const handleViewDepartment = (departmentId: number) => {
@@ -80,7 +72,6 @@ export default function AdminDepartments() {
         await deleteDepartment(id);
       } catch (error) {
         console.error("Failed to delete department:", error);
-        toast.error("Failed to delete department");
       }
     }
   };
@@ -183,9 +174,9 @@ export default function AdminDepartments() {
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              {/* ID */}
+              {/* No. */}
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                ID
+                No.
               </th>
 
               {/* Department Name */}
@@ -218,52 +209,56 @@ export default function AdminDepartments() {
                 </td>
               </tr>
             ) : (
-              // Real data
-              departments.map((department) => (
-                <tr
-                  key={department.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {department.id}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {department.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">
-                    {department.description}
-                  </td>
+              // Real data with sequential numbering
+              departments.map((department, index) => {
+                // Calculate the sequential number based on current page and index
+               const sequentialNumber = ((filters.page || 1) - 1) * (filters.limit || 10) + index + 1;
 
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewDepartment(department.id)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+                return (
+                  <tr
+                    key={department.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {sequentialNumber}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {department.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">
+                      {department.description}
+                    </td>
 
-                      <button
-                        onClick={() =>
-                          handleDeleteDepartment(
-                            department.id,
-                            department.name,
-                            department.description
-                          )
-                        }
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleViewDepartment(department.id)}
+                          className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleDeleteDepartment(
+                              department.id,
+                              department.name,
+                              department.description
+                            )
+                          }
+                          className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
-
 
       {/* Department Detail Modal */}
       {selectedDepartmentId && (
