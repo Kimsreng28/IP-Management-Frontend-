@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useAdminProfile } from '../../hooks/useAdminProfile';
 import { ProfileImageUpload } from '../../components/admin/ProfileImageUpload';
-import { ProfileForm } from '../../components/admin/ProfileForm';
 import { ChangePasswordForm } from '../../components/admin/ChangePasswordForm';
 
 const AdminProfile = () => {

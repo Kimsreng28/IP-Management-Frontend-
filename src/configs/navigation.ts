@@ -17,6 +17,9 @@ import { lazy } from "react";
 import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
 import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
 import AdminDepartments from "../pages/p2-admin/a5-departments/AdminDepartments";
+import HodProfile from "../pages/p3-hod/HodProfile";
+import TeacherProfile from "../pages/p4-teacher/TeacherProfile";
+import StudentProfile from "../pages/p5-student/StudentProfile";
 
 // Lazy load existing pages
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage"));
@@ -162,6 +165,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       roles: ["HEAD_OF_DEPARTMENT"],
       component: HodReports,
     },
+    {
+      path: "/hod/profile",
+      icon: User,
+      label: "Profile",
+      roles: ["HEAD_OF_DEPARTMENT"],
+      component: HodProfile,
+    },
   ],
 
   TEACHER: [
@@ -186,6 +196,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       roles: ["TEACHER"],
       component: TeacherCourses,
     },
+    {
+      path: "/teacher/profile",
+      icon: User,
+      label: "Profile",
+      roles: ["TEACHER"],
+      component: TeacherProfile,
+    },
   ],
 
   STUDENT: [
@@ -209,6 +226,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "My Courses",
       roles: ["STUDENT"],
       component: StudentCourses,
+    },
+    {
+      path: "/student/profile",
+      icon: User,
+      label: "Profile",
+      roles: ["STUDENT"],
+      component: StudentProfile,
     },
   ],
 };
