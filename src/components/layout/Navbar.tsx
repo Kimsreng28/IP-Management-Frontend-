@@ -5,24 +5,27 @@ import { useState, useEffect } from "react";
 import { Bell, Menu } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { getAllRoutes } from "../../configs/navigation";
+import { useHodProfile } from "../../hooks/useHodProfile";
 
 interface NavbarProps {
   onMenuClick: () => void;
-  userName?: string;
-  userRole?: string;
-  userAvatar?: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   onMenuClick,
-  userName = "User",
-  userRole = "Administrator",
-  userAvatar,
 }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [pageTitle, setPageTitle] = useState("Dashboard");
   const location = useLocation();
   const allRoutes = getAllRoutes();
+
+  // Fetch HOD profile on mount
+  const { profile, fetchProfile } = useHodProfile();
+
+  // Fetch profile when component mounts
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   // Format role for display (convert from uppercase to proper case)
   const formatRole = (role: string) => {
@@ -139,29 +142,26 @@ const Navbar: React.FC<NavbarProps> = ({
 
           {/* Profile */}
           <div className="flex items-center gap-3">
-            {userAvatar ? (
+            {profile ? (
               <img
-                src={userAvatar || "/placeholder.svg"}
-                alt={userName}
+                src={profile.image || '/default-avatar.png'}
+                alt={profile.name_en}
                 className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
                 <span className="text-gray-600 font-medium text-sm">
-                  {userName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)}
+                  {profile?.name_en.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
+
             <div className="hidden md:block">
               <p className="text-sm font-semibold text-gray-900 leading-tight">
-                {userName}
+                {profile?.name_en}
               </p>
               <p className="text-xs text-gray-600 leading-tight">
-                {formatRole(userRole)}
+                {formatRole(profile?.role)}
               </p>
             </div>
           </div>
