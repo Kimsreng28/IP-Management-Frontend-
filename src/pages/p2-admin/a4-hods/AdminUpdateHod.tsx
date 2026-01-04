@@ -261,10 +261,6 @@ export default function AdminUpdateHod({
       newErrors.address = "Address is required";
     }
 
-    if (!formData.department_id) {
-      newErrors.department_id = "Please select department";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
