@@ -20,6 +20,7 @@ import AdminDepartments from "../pages/p2-admin/a5-departments/AdminDepartments"
 import HodProfile from "../pages/p3-hod/HodProfile";
 import TeacherProfile from "../pages/p4-teacher/TeacherProfile";
 import StudentProfile from "../pages/p5-student/StudentProfile";
+import AdminSubjects from "../pages/p2-admin/a6-subjects/AdminSubjects";
 
 // Lazy load existing pages
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage"));
@@ -133,6 +134,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "Department",
       roles: ["ADMIN"],
       component: AdminDepartments,
+    },
+       {
+      path: "/admin/subjects",  
+      icon: BookOpen,          
+      label: "Subjects",
+      roles: ["ADMIN"],
+      component: AdminSubjects, 
     },
     {
       path: "/admin/profile",
