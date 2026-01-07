@@ -138,7 +138,7 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
        {
       path: "/admin/subjects",  
       icon: BookOpen,          
-      label: "Subjects",
+      label: "Subject",
       roles: ["ADMIN"],
       component: AdminSubjects, 
     },

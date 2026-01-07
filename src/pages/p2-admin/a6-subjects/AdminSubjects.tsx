@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { useSubjectStore } from "../../../stores/useSubjectStore";
 import toast from "react-hot-toast";
+import AdminUpdateSubject from "./AdminUpdateSubject";
+import AdminCreateSubject from "./AdminCreateSubject";
+import AdminSubjectDetail from "./AdminSubjectDetail";
 
 // You can create these components later
 
@@ -406,26 +409,26 @@ export default function AdminSubjects() {
       </div>
 
       {/* Open Subject Model */}
-      {/* {selectedSubjectId && (
-        <SubjectViewDetail
+      {selectedSubjectId && (
+        <AdminSubjectDetail
           subjectId={selectedSubjectId}
           isOpen={viewModalOpen}
           onClose={handleCloseViewModal}
         />
-      )} */}
+      )}
 
       {/* Create Subject Modal */}
-      {/* <AdminCreateSubject
+      <AdminCreateSubject
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSuccess={() => {
           fetchSubjects();
           setCreateModalOpen(false);
         }}
-      /> */}
+      />
 
       {/* Update Subject Modal */}
-      {/* {editingSubjectId && (
+      {editingSubjectId && (
         <AdminUpdateSubject
           subjectId={editingSubjectId}
           isOpen={updateModalOpen}
@@ -434,7 +437,7 @@ export default function AdminSubjects() {
             fetchSubjects();
           }}
         />
-      )} */}
+      )}
 
       {/* Pagination */}
       {meta && (

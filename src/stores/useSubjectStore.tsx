@@ -7,11 +7,36 @@ interface Subject {
   code: string;
   name: string;
   description?: string;
-  total_hours: number;  // Added this field
+  total_hours: number;
   credits: number;
   program_name: string;
   program_id: number;
   semester_names: string[];
+  teacher_info_id?: string;
+  teacher_name?: string;
+  teacher_code?: string;
+  // Add these optional properties
+  teacher?: {
+    id: string;
+    code: string;
+    name: string;
+    email: string;
+    department: string;
+  };
+  teachers?: Array<{
+    id: string;
+    code: string;
+    name: string;
+    email: string;
+  }>;
+  semesters?: Array<{
+    id: number;
+    name: string;
+    semester_number: number;
+    year_number: number;
+  }>;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface Program {
