@@ -1,39 +1,29 @@
+// components/admin/programs/AdminPrograms.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Eye,
-  Edit2,
-  Trash2,
-  Plus,
-  Search,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
-import { useSubjectStore } from "../../../stores/useSubjectStore";
-import toast from "react-hot-toast";
-import AdminUpdateSubject from "./AdminUpdateSubject";
-import AdminCreateSubject from "./AdminCreateSubject";
-import AdminSubjectDetail from "./AdminSubjectDetail";
+import { Eye, Trash2, Plus, Search, ArrowUp, ArrowDown } from "lucide-react";
+import { useProgramStore } from "../../../stores/useProgramStore";
+import AdminProgramCreate from "./AdminProgramCreate";
 
-// You can create these components later
-
-export default function AdminSubjects() {
+export default function AdminPrograms() {
   const {
     // Data
-    subjects,
     programs,
+    departments,
+    degreeLevels,
     meta,
 
     // UI State
     isLoading,
+    isFetching,
 
     // Filters
     filters,
 
     // Actions
-    fetchSubjects,
-    deleteSubject,
+    fetchPrograms,
+    deleteProgram,
 
     // Filter management
     setFilter,
@@ -42,86 +32,54 @@ export default function AdminSubjects() {
     // Pagination
     goToPage,
     setItemsPerPage,
-  } = useSubjectStore();
+  } = useProgramStore();
+
+  // State for modals
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Handle clear filters
   const handleClearFilters = () => {
     resetFilters();
   };
 
-  // State variables inside the AdminSubjects component
-  const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
-    null
-  );
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
-
-  // Add handlers for opening/closing the update modal
-  const handleEditSubject = (subjectId: string) => {
-    setEditingSubjectId(subjectId);
-    setUpdateModalOpen(true);
-  };
-
-  const handleCloseUpdateModal = () => {
-    setUpdateModalOpen(false);
-    setEditingSubjectId(null);
-  };
-
-  // Add handlers for opening/closing the modal
-  const handleViewSubject = (subjectId: string) => {
-    setSelectedSubjectId(subjectId);
-    setViewModalOpen(true);
-  };
-
-  const handleCloseViewModal = () => {
-    setViewModalOpen(false);
-    setSelectedSubjectId(null);
-  };
-
-  // Handle delete subject
-  const handleDeleteSubject = async (
-    id: string,
-    code: string,
-    name: string
-  ) => {
-    const message = `Are you sure you want to delete this subject?\n\n${code} - ${name}`;
+  // Handle delete program
+  const handleDeleteProgram = async (id: string, name: string) => {
+    const message = `Are you sure you want to delete this program?\n\n${name}`;
 
     if (confirm(message)) {
       try {
-        await deleteSubject(id);
+        await deleteProgram(id);
       } catch (error) {
-        console.error("Failed to delete subject:", error);
-        toast.error("Failed to delete subject");
+        console.error("Failed to delete program:", error);
       }
     }
   };
 
   // Initial fetch on component mount
   useEffect(() => {
-    fetchSubjects();
+    fetchPrograms();
   }, []);
 
   // Debounced search and filter updates
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchSubjects();
+      fetchPrograms();
     }, 300);
     return () => clearTimeout(timeoutId);
   }, [
     filters.search,
-    filters.program,
-    filters.sort_by,
-    filters.sort_order,
     filters.page,
     filters.limit,
+    filters.department,
+    filters.degree_lvl,
+    filters.sort_by,
+    filters.sort_order,
   ]);
 
   // Skeleton row for loading state
   const SkeletonRow = () => (
     <tr className="animate-pulse">
-      {[...Array(5)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <td key={i} className="px-6 py-4">
           <div className="h-4 bg-gray-200 rounded w-3/4"></div>
         </td>
@@ -129,17 +87,28 @@ export default function AdminSubjects() {
     </tr>
   );
 
-  // Handle filter changes
+  // Handle search change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter("search", e.target.value);
   };
 
-  const handleProgramChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter("program", e.target.value);
+  // Handle filter changes
+  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFilter("department", value ? value : undefined);
+  };
+  const handleDegreeLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFilter("degree_lvl", value ? Number(value) : undefined);
+  };
+  // Get degree level label
+  const getDegreeLevelLabel = (value: number) => {
+    const level = degreeLevels.find((l) => l.value === value);
+    return level ? level.label : `Level ${value}`;
   };
 
-  // Handle column sorting
-  const handleSort = (column: "code" | "name" | "credits" | "total_hours") => {
+  // Handle column sorting (only for name and duration)
+  const handleSort = (column: "name" | "duration") => {
     const currentSortBy = filters.sort_by;
     const currentSortOrder = filters.sort_order;
 
@@ -166,12 +135,12 @@ export default function AdminSubjects() {
             </div>
             <input
               type="text"
-              placeholder="Search by code or name..."
+              placeholder="Search by program name"
               value={filters.search || ""}
               onChange={handleSearchChange}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg 
-     focus:outline-none focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E]
-     text-base placeholder-gray-500 transition-colors"
+                focus:outline-none focus:ring-2 focus:ring-[#131C2E] focus:border-[#131C2E]
+                text-base placeholder-gray-500 transition-colors"
             />
           </div>
 
@@ -180,27 +149,28 @@ export default function AdminSubjects() {
             <button
               onClick={() => setCreateModalOpen(true)}
               className="
-            flex items-center justify-center gap-2
-            px-6 py-3
-            bg-[#131C2E] text-white font-medium 
-            rounded-lg
-            hover:bg-[#1B2742]
-            active:bg-[#0E1524]
-            transition-colors 
-            shadow-sm
-          "
+                flex items-center justify-center gap-2
+                px-6 py-3
+                bg-[#131C2E] text-white font-medium 
+                rounded-lg
+                hover:bg-[#1B2742]
+                active:bg-[#0E1524]
+                transition-colors 
+                shadow-sm
+              "
             >
               <Plus className="w-5 h-5" />
-              <span>Add Subject</span>
+              <span>Add Program</span>
             </button>
           </div>
         </div>
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-3 mb-4">
+          {/* Department Filter */}
           <select
-            value={filters.program || ""}
-            onChange={handleProgramChange}
+            value={filters.department || ""}
+            onChange={handleDepartmentChange}
             className="
               px-4 py-2.5
               border border-gray-300 rounded-lg
@@ -215,14 +185,39 @@ export default function AdminSubjects() {
               min-w-[200px]
             "
           >
-            <option value="">All Programs</option>
-            {programs.map((program) => (
-              <option key={program.id} value={program.id}>
-                {program.name}
+            <option value="">Departments</option>
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.id}>
+                {dept.name}
               </option>
             ))}
           </select>
 
+          {/* Degree Level Filter */}
+          <select
+            value={filters.degree_lvl?.toString() || ""}
+            onChange={handleDegreeLevelChange}
+            className="
+    px-4 py-2.5
+    border border-gray-300 rounded-lg
+    bg-gray-50
+    hover:border-gray-400
+    focus:ring-2 focus:ring-[#131C2E]
+    focus:border-[#131C2E]
+    cursor-pointer
+    outline-none
+    text-sm
+    transition-colors
+    min-w-[200px]
+  "
+          >
+            <option value="">Degree Levels</option>
+            {degreeLevels.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </select>
           {/* Push Clear button to the end */}
           <div className="flex-1" />
 
@@ -250,31 +245,18 @@ export default function AdminSubjects() {
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              {/* Subject Code */}
-              <th
-                className="group px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleSort("code")}
-              >
-                <div className="flex items-center gap-1">
-                  Code
-                  <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sort_by === "code" &&
-                      (filters.sort_order === "ASC" ? (
-                        <ArrowUp size={14} className="text-gray-700" />
-                      ) : (
-                        <ArrowDown size={14} className="text-gray-700" />
-                      ))}
-                  </span>
-                </div>
+              {/* No. */}
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                No.
               </th>
 
-              {/* Subject Name */}
+              {/* Program Name */}
               <th
                 className="group px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleSort("name")}
               >
                 <div className="flex items-center gap-1">
-                  Subject Name
+                  Program Name
                   <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {filters.sort_by === "name" &&
                       (filters.sort_order === "ASC" ? (
@@ -286,45 +268,32 @@ export default function AdminSubjects() {
                 </div>
               </th>
 
-              {/* Total Hours */}
-              <th
-                className="group px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleSort("total_hours")}
-              >
-                <div className="flex items-center gap-1">
-                  Total Hours
-                  <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sort_by === "total_hours" &&
-                      (filters.sort_order === "ASC" ? (
-                        <ArrowUp size={14} className="text-gray-700" />
-                      ) : (
-                        <ArrowDown size={14} className="text-gray-700" />
-                      ))}
-                  </span>
-                </div>
-              </th>
-
-              {/* Credits */}
-              <th
-                className="group px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleSort("credits")}
-              >
-                <div className="flex items-center gap-1">
-                  Credits
-                  <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {filters.sort_by === "credits" &&
-                      (filters.sort_order === "ASC" ? (
-                        <ArrowUp size={14} className="text-gray-700" />
-                      ) : (
-                        <ArrowDown size={14} className="text-gray-700" />
-                      ))}
-                  </span>
-                </div>
-              </th>
-
-              {/* Program */}
+              {/* Degree Level - No Sorting */}
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Program
+                Degree Level
+              </th>
+
+              {/* Duration */}
+              <th
+                className="group px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSort("duration")}
+              >
+                <div className="flex items-center gap-1">
+                  Duration (Years)
+                  <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {filters.sort_by === "duration" &&
+                      (filters.sort_order === "ASC" ? (
+                        <ArrowUp size={14} className="text-gray-700" />
+                      ) : (
+                        <ArrowDown size={14} className="text-gray-700" />
+                      ))}
+                  </span>
+                </div>
+              </th>
+
+              {/* Department - No Sorting */}
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Department
               </th>
 
               {/* Actions */}
@@ -334,110 +303,112 @@ export default function AdminSubjects() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {isLoading ? (
-              // Show skeleton rows during initial load
+            {isLoading || isFetching ? (
+              // Show skeleton rows during loading
               Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-            ) : subjects.length === 0 ? (
+            ) : programs.length === 0 ? (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="px-6 py-12 text-center text-gray-500"
                 >
-                  No subjects found
+                  No programs found
                 </td>
               </tr>
             ) : (
-              // Real data
-              subjects.map((subject) => (
-                <tr
-                  key={subject.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {subject.code}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {subject.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                      {subject.total_hours} hours
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {subject.credits} credits
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {subject.program_name}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewSubject(subject.id)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+              // Real data with sequential numbering
+              programs.map((program, index) => {
+                // Calculate the sequential number based on current page and index
+                const sequentialNumber =
+                  ((filters.page || 1) - 1) * (filters.limit || 10) + index + 1;
 
-                      <button
-                        onClick={() => handleEditSubject(subject.id)}
-                        className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleDeleteSubject(
-                            subject.id,
-                            subject.code,
-                            subject.name
-                          )
-                        }
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                return (
+                  <tr
+                    key={program.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {sequentialNumber}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {program.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        {getDegreeLevelLabel(program.degree_lvl)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        {program.duration} year
+                        {program.duration !== 1 ? "s" : ""}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {program.department_name}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            /* Add view functionality */
+                          }}
+                          className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            /* Add edit functionality */
+                          }}
+                          className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleDeleteProgram(program.id, program.name)
+                          }
+                          className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Open Subject Model */}
-      {selectedSubjectId && (
-        <AdminSubjectDetail
-          subjectId={selectedSubjectId}
-          isOpen={viewModalOpen}
-          onClose={handleCloseViewModal}
-        />
-      )}
-
-      {/* Create Subject Modal */}
-      <AdminCreateSubject
+      {/* Program Create Modal */}
+      <AdminProgramCreate
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSuccess={() => {
-          fetchSubjects();
+        onCreateSuccess={() => {
           setCreateModalOpen(false);
+          fetchPrograms(); // Refresh the list after creation
         }}
       />
-
-      {/* Update Subject Modal */}
-      {editingSubjectId && (
-        <AdminUpdateSubject
-          subjectId={editingSubjectId}
-          isOpen={updateModalOpen}
-          onClose={handleCloseUpdateModal}
-          onSuccess={() => {
-            fetchSubjects();
-          }}
-        />
-      )}
 
       {/* Pagination */}
       {meta && (
@@ -462,7 +433,7 @@ export default function AdminSubjects() {
               <option value={20}>20</option>
               <option value={50}>50</option>
             </select>
-            <span>of {meta.total} subjects</span>
+            <span>of {meta.total} programs</span>
           </div>
 
           {/* Right: pagination controls */}

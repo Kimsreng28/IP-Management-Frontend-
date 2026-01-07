@@ -3,6 +3,7 @@ import {
   BookOpen,
   Building2,
   Calendar,
+  GraduationCap,
   Key,
   LayoutDashboard,
   Lock,
@@ -20,7 +21,8 @@ import AdminDepartments from "../pages/p2-admin/a5-departments/AdminDepartments"
 import HodProfile from "../pages/p3-hod/HodProfile";
 import TeacherProfile from "../pages/p4-teacher/TeacherProfile";
 import StudentProfile from "../pages/p5-student/StudentProfile";
-import AdminSubjects from "../pages/p2-admin/a6-subjects/AdminSubjects";
+import AdminSubjects from "../pages/p2-admin/a7-subjects/AdminSubjects";
+import AdminPrograms from "../pages/p2-admin/a6-programs/AdminPrograms";
 
 // Lazy load existing pages
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage"));
@@ -135,12 +137,19 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       roles: ["ADMIN"],
       component: AdminDepartments,
     },
-       {
-      path: "/admin/subjects",  
-      icon: BookOpen,          
+    {
+      path: "/admin/programs",
+      icon: GraduationCap,
+      label: "Program",
+      roles: ["ADMIN"],
+      component: AdminPrograms,
+    },
+    {
+      path: "/admin/subjects",
+      icon: BookOpen,
       label: "Subject",
       roles: ["ADMIN"],
-      component: AdminSubjects, 
+      component: AdminSubjects,
     },
     {
       path: "/admin/profile",
