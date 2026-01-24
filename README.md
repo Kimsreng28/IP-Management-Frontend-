@@ -30,7 +30,7 @@ src/
 │   └── 🎨 globals.css        # Tailwind CSS imports
 ├── 📁 api/               # API service functions
 ├── 📁 hooks/             # Custom React hooks
-├── 📁 contexts/          # React Context providers
+├── 📁 stores/            # React providers
 ├── 📁 utils/             # Utility functions
 ├── 📁 types/             # TypeScript type definitions
 ├── 📁 constants/         # App constants and configuration

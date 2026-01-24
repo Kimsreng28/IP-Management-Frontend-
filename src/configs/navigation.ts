@@ -18,17 +18,27 @@ import { lazy } from "react";
 import AdminHods from "../pages/p2-admin/a1-hods/AdminHods";
 import AdminTeachers from "../pages/p2-admin/a3-teachers/AdminTeachers";
 import AdminDepartments from "../pages/p2-admin/a5-departments/AdminDepartments";
+import AdminPrograms from "../pages/p2-admin/a6-programs/AdminPrograms";
+import AdminSubjects from "../pages/p2-admin/a7-subjects/AdminSubjects";
 import HodProfile from "../pages/p3-hod/HodProfile";
 import TeacherProfile from "../pages/p4-teacher/TeacherProfile";
 import StudentProfile from "../pages/p5-student/StudentProfile";
-import AdminSubjects from "../pages/p2-admin/a7-subjects/AdminSubjects";
-import AdminPrograms from "../pages/p2-admin/a6-programs/AdminPrograms";
+const AdminSchedules = lazy(
+  () => import("../pages/p2-admin/a8-schedule/AdminSchedules"),
+);
+const TeacherSchedules = lazy(
+  () => import("../pages/p4-teacher/TeacherSchedules"),
+);
+const StudentSchedules = lazy(
+  () => import("../pages/p5-student/StudentSchedules"),
+);
+const HODSchedules = lazy(() => import("../pages/p3-hod/HODSchedules"));
 
 // Lazy load existing pages
 const LoginPage = lazy(() => import("../pages/p1-auth/LoginPage"));
 const AdminDashboard = lazy(() => import("../pages/p2-admin/AdminDashboard"));
 const AdminStudents = lazy(
-  () => import("../pages/p2-admin/a2-students/AdminStudents")
+  () => import("../pages/p2-admin/a2-students/AdminStudents"),
 );
 const AdminProfile = lazy(() => import("../pages/p2-admin/AdminProfile"));
 
@@ -37,27 +47,27 @@ const HodStaff = lazy(() => import("../pages/p3-hod/HodStaff"));
 const HodReports = lazy(() => import("../pages/p3-hod/HodReports"));
 
 const TeacherDashboard = lazy(
-  () => import("../pages/p4-teacher/TeacherDashboard")
+  () => import("../pages/p4-teacher/TeacherDashboard"),
 );
 const TeacherAttendance = lazy(
-  () => import("../pages/p4-teacher/TeacherAttendance")
+  () => import("../pages/p4-teacher/TeacherAttendance"),
 );
 const TeacherCourses = lazy(() => import("../pages/p4-teacher/TeacherCourses"));
 
 const StudentDashboard = lazy(
-  () => import("../pages/p5-student/StudentDashboard")
+  () => import("../pages/p5-student/StudentDashboard"),
 );
 const StudentAttendance = lazy(
-  () => import("../pages/p5-student/StudentAttendance")
+  () => import("../pages/p5-student/StudentAttendance"),
 );
 const StudentCourses = lazy(() => import("../pages/p5-student/StudentCourses"));
 
 // Lazy load new password-related pages
 const ForgotPasswordPage = lazy(
-  () => import("../pages/p1-auth/ForgotPasswordPage")
+  () => import("../pages/p1-auth/ForgotPasswordPage"),
 );
 const ResetPasswordPage = lazy(
-  () => import("../pages/p1-auth/ResetPasswordPage")
+  () => import("../pages/p1-auth/ResetPasswordPage"),
 );
 
 // Define interface for route configurations
@@ -152,6 +162,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       component: AdminSubjects,
     },
     {
+      path: "/admin/schedules",
+      icon: Calendar,
+      label: "Schedule",
+      roles: ["ADMIN"],
+      component: AdminSchedules,
+    },
+    {
       path: "/admin/profile",
       icon: User,
       label: "Profile",
@@ -189,6 +206,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       roles: ["HEAD_OF_DEPARTMENT"],
       component: HodProfile,
     },
+    {
+      path: "/hod/schedules",
+      icon: Calendar,
+      label: "Schedule",
+      roles: ["HEAD_OF_DEPARTMENT"],
+      component: HODSchedules,
+    },
   ],
 
   TEACHER: [
@@ -220,6 +244,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       roles: ["TEACHER"],
       component: TeacherProfile,
     },
+    {
+      path: "/teacher/schedules",
+      icon: Calendar,
+      label: "Schedule",
+      roles: ["TEACHER"],
+      component: TeacherSchedules,
+    },
   ],
 
   STUDENT: [
@@ -250,6 +281,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "Profile",
       roles: ["STUDENT"],
       component: StudentProfile,
+    },
+    {
+      path: "/student/schedules",
+      icon: Calendar,
+      label: "Schedule",
+      roles: ["STUDENT"],
+      component: StudentSchedules,
     },
   ],
 };
