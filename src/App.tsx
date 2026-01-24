@@ -1,4 +1,4 @@
-// src/routes/AppRoutes.tsx
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense } from "react";
 import { useAuthStore } from "./stores/useAuthStore";
@@ -36,7 +36,7 @@ export default function AppRoutes() {
       <Routes>
         {/* Root redirect based on auth state */}
         <Route path="/" element={<Navigate to={getDefaultDashboard()} replace />} />
-        
+
         {/* Public routes (no layout) */}
         {publicRoutes.map((route) => (
           <Route
@@ -47,13 +47,13 @@ export default function AppRoutes() {
         ))}
 
         {/* Protected routes (WITH DashboardLayout) */}
-        <Route 
+        <Route
           element={
             authUser ? (
-              <DashboardLayout 
+              <DashboardLayout
                 userName={authUser.name}
                 userRole={authUser.role}
-           
+
               />
             ) : (
               <Navigate to="/login" replace />

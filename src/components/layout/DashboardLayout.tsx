@@ -32,9 +32,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Navbar */}
         <Navbar
           onMenuClick={() => setSidebarOpen(true)}
-          userName={userName}
-          userRole={userRole}
-          userAvatar={userAvatar}
         />
 
         {/* Page Content */}
