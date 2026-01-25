@@ -31,7 +31,7 @@ export default function StudentSchedules() {
         filters,
 
         // Actions
-        fetchSchedules,
+        fetchStudentSchedules,
         fetchRooms,
         fetchClasses,
 
@@ -55,15 +55,14 @@ export default function StudentSchedules() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Fetch all data
-                await Promise.all([
-                    fetchSchedules(),
-                    fetchRooms(),
-                    fetchClasses()
-                ]);
+                // Fetch student-specific schedules
+                await fetchStudentSchedules();
+
+                // Fetch other data
+                await fetchRooms();
+                await fetchClasses();
 
                 // Apply filters after data is loaded
-                // Use setTimeout to ensure state is updated
                 setTimeout(() => {
                     applyFilters();
                 }, 100);

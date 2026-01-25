@@ -76,6 +76,7 @@ interface ScheduleState {
 
     // Actions
     fetchSchedules: () => Promise<void>;
+    fetchStudentSchedules: () => Promise<void>;
     fetchScheduleById: (id: string) => Promise<Schedule | null>;
     fetchRooms: () => Promise<void>;
     fetchClasses: () => Promise<void>;
@@ -193,6 +194,43 @@ export const useScheduleStore = create<ScheduleState>()(
                     console.error('Error fetching schedules:', error);
                     toast.error(error.response?.data?.message || 'Failed to fetch schedules');
                     set({ schedules: [], allSchedules: [], meta: null });
+                } finally {
+                    set({ isLoading: false });
+                }
+            },
+
+            // Fetch student schedules
+            fetchStudentSchedules: async () => {
+                set({ isLoading: true });
+                try {
+                    const response = await axiosInstance.get('/schedules');
+
+                    let schedulesArray = [];
+
+                    if (Array.isArray(response.data)) {
+                        schedulesArray = response.data;
+                    } else if (response.data.success && Array.isArray(response.data.data)) {
+                        schedulesArray = response.data.data;
+                    } else if (response.data.data && Array.isArray(response.data.data)) {
+                        schedulesArray = response.data.data;
+                    }
+
+                    const transformedSchedules = schedulesArray.map(transformScheduleData);
+
+                    set({
+                        allSchedules: transformedSchedules,
+                        schedules: transformedSchedules,
+                        meta: {
+                            page: 1,
+                            limit: 10,
+                            total: transformedSchedules.length,
+                        },
+                    });
+
+                    setTimeout(() => get().applyFilters(), 0);
+                } catch (error: any) {
+                    console.error('Error fetching student schedules:', error);
+                    toast.error(error.response?.data?.message || 'Failed to fetch your schedules');
                 } finally {
                     set({ isLoading: false });
                 }
