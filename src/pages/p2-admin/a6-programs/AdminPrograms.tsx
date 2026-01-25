@@ -2,9 +2,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, Trash2, Plus, Search, ArrowUp, ArrowDown } from "lucide-react";
+import { Eye, Trash2, Plus, Search, ArrowUp, ArrowDown, Pencil } from "lucide-react";
 import { useProgramStore } from "../../../stores/useProgramStore";
 import AdminProgramCreate from "./AdminProgramCreate";
+import AdminUpdateProgram from "./AdminUpdateProgram";
+import AdminProgramDetail from "./AdminProgramDetail";
 
 export default function AdminPrograms() {
   const {
@@ -36,6 +38,9 @@ export default function AdminPrograms() {
 
   // State for modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
 
   // Handle clear filters
   const handleClearFilters = () => {
@@ -53,6 +58,25 @@ export default function AdminPrograms() {
         console.error("Failed to delete program:", error);
       }
     }
+  };
+
+   // Handle view detail
+  const handleViewDetail = (id: string) => {
+    setSelectedProgramId(id);
+    setDetailModalOpen(true);
+  };
+
+  // Handle edit program
+  const handleEditProgram = (id: string) => {
+    setSelectedProgramId(id);
+    setUpdateModalOpen(true);
+  };
+
+  // Handle update success
+  const handleUpdateSuccess = () => {
+    setUpdateModalOpen(false);
+    setSelectedProgramId(null);
+    fetchPrograms(); // Refresh the list after update
   };
 
   // Initial fetch on component mount
@@ -350,9 +374,7 @@ export default function AdminPrograms() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => {
-                            /* Add view functionality */
-                          }}
+                          onClick={() => handleViewDetail(program.id)}
                           className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="View Details"
                         >
@@ -360,25 +382,11 @@ export default function AdminPrograms() {
                         </button>
 
                         <button
-                          onClick={() => {
-                            /* Add edit functionality */
-                          }}
+                          onClick={() => handleEditProgram(program.id)}
                           className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                           title="Edit"
                         >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
+                           <Pencil className="w-4 h-4" />
                         </button>
 
                         <button
@@ -409,6 +417,32 @@ export default function AdminPrograms() {
           fetchPrograms(); // Refresh the list after creation
         }}
       />
+
+      {/* Program Detail Modal */}
+      {selectedProgramId && (
+        <AdminProgramDetail
+          programId={selectedProgramId}
+          isOpen={detailModalOpen}
+          onClose={() => {
+            setDetailModalOpen(false);
+            setSelectedProgramId(null);
+          }}
+        />
+      )}
+
+      {/* Program Update Modal */}
+      {selectedProgramId && (
+        <AdminUpdateProgram
+          programId={selectedProgramId}
+          isOpen={updateModalOpen}
+          onClose={() => {
+            setUpdateModalOpen(false);
+            setSelectedProgramId(null);
+          }}
+          onSuccess={handleUpdateSuccess}
+        />
+      )}
+
 
       {/* Pagination */}
       {meta && (
