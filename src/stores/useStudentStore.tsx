@@ -97,6 +97,10 @@ interface StudentState {
   // Actions
   fetchStudents: (params?: Partial<FilterParams>) => Promise<void>;
   fetchStudentById: (id: string) => Promise<Student | null>;
+  fetchStudentsForHod: (params?: Partial<FilterParams>) => Promise<void>;
+  fetchStudentByIdForHod: (id: string) => Promise<Student | null>;
+  fetchStudentsForTeacher: (params?: Partial<FilterParams>) => Promise<void>;
+  fetchStudentByIdForTeacher: (id: string) => Promise<Student | null>;
   createStudent: (data: FormData) => Promise<void>;
   updateStudent: (id: string, data: Partial<Student> | FormData) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
@@ -195,6 +199,92 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isFetching: false });
     }
   },
+  fetchStudentsForHod: async (params?: Partial<FilterParams>) => {
+    const currentFilters = get().filters;
+    const newFilters = { ...currentFilters, ...params };
+
+    set({ isFetching: true, filters: newFilters });
+
+    try {
+      // Build query params
+      const queryParams = new URLSearchParams();
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== "" && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+
+      const response = await axiosInstance.get<StudentsResponse>(
+        `/hod/students?${queryParams.toString()}`
+      );
+
+      if (response.data.success) {
+        set({
+          students: response.data.data,
+          departments: response.data.data_setup.departments,
+          sections: response.data.data_setup.sections,
+          programs: response.data.data_setup.programs,
+          academic_years: response.data.data_setup.academic_years,
+          meta: response.data.meta,
+          error: null,
+        });
+      } else {
+        throw new Error(response.data.message || "Failed to fetch students");
+      }
+    } catch (error: any) {
+      console.error("Error fetching students:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to load students";
+      set({ error: errorMessage });
+      toast.error(errorMessage);
+    } finally {
+      set({ isFetching: false });
+    }
+  },
+  fetchStudentsForTeacher: async (params?: Partial<FilterParams>) => {
+    const currentFilters = get().filters;
+    const newFilters = { ...currentFilters, ...params };
+
+    set({ isFetching: true, filters: newFilters });
+
+    try {
+      // Build query params
+      const queryParams = new URLSearchParams();
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== "" && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+
+      const response = await axiosInstance.get<StudentsResponse>(
+        `/teacher/students?${queryParams.toString()}`
+      );
+
+      if (response.data.success) {
+        set({
+          students: response.data.data,
+          departments: response.data.data_setup.departments,
+          sections: response.data.data_setup.sections,
+          programs: response.data.data_setup.programs,
+          academic_years: response.data.data_setup.academic_years,
+          meta: response.data.meta,
+          error: null,
+        });
+      } else {
+        throw new Error(response.data.message || "Failed to fetch students");
+      }
+    } catch (error: any) {
+      console.error("Error fetching students:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to load students";
+      set({ error: errorMessage });
+      toast.error(errorMessage);
+    } finally {
+      set({ isFetching: false });
+    }
+  },
 
   // Fetch single student
   fetchStudentById: async (id: string) => {
@@ -212,54 +302,84 @@ export const useStudentStore = create<StudentState>((set, get) => ({
       set({ isLoading: false });
     }
   },
+  fetchStudentByIdForHod: async (id: string) => {
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.get<{ data: Student }>(
+        `/hod/students/${id}`
+      );
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Error fetching student:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch student");
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  fetchStudentByIdForTeacher: async (id: string) => {
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.get<{ data: Student }>(
+        `/teacher/students/${id}`
+      );
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Error fetching student:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch student");
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   // Create student
- createStudent: async (data: FormData) => {
-  set({ isLoading: true });
-  try {
-    await axiosInstance.post("/admin/students", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    toast.success("Student created successfully");
-    await get().fetchStudents();
-  } catch (error: any) {
-    toast.error(error.response?.data?.message || "Failed to create student");
-    throw error;
-  } finally {
-    set({ isLoading: false });
-  }
-},
-
-
-  // Update student
- updateStudent: async (id: string, data: Partial<Student> | FormData) => {
-  set({ isLoading: true });
-  try {
-    if (data instanceof FormData) {
-      // Handle FormData (for updates with image)
-      await axiosInstance.patch(`/admin/students/${id}`, data, {
+  createStudent: async (data: FormData) => {
+    set({ isLoading: true });
+    try {
+      await axiosInstance.post("/admin/students", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-    } else {
-      // Handle regular JSON data
-      await axiosInstance.patch(`/admin/students/${id}`, data);
+
+      toast.success("Student created successfully");
+      await get().fetchStudents();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to create student");
+      throw error;
+    } finally {
+      set({ isLoading: false });
     }
-    toast.success("Student updated successfully");
-    // Refresh the list
-    await get().fetchStudents();
-  } catch (error: any) {
-    console.error("Error updating student:", error);
-    toast.error(error.response?.data?.message || "Failed to update student");
-    throw error;
-  } finally {
-    set({ isLoading: false });
-  }
-},
+  },
+
+
+  // Update student
+  updateStudent: async (id: string, data: Partial<Student> | FormData) => {
+    set({ isLoading: true });
+    try {
+      if (data instanceof FormData) {
+        // Handle FormData (for updates with image)
+        await axiosInstance.patch(`/admin/students/${id}`, data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        // Handle regular JSON data
+        await axiosInstance.patch(`/admin/students/${id}`, data);
+      }
+      toast.success("Student updated successfully");
+      // Refresh the list
+      await get().fetchStudents();
+    } catch (error: any) {
+      console.error("Error updating student:", error);
+      toast.error(error.response?.data?.message || "Failed to update student");
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   // Delete student
   deleteStudent: async (id: string) => {

@@ -65,7 +65,9 @@ interface TeacherState {
 
   // Actions
   fetchTeachers: (params?: Partial<FilterParams>) => Promise<void>;
+  fetchTeachersForHod: (params?: Partial<FilterParams>) => Promise<void>;
   fetchTeacherById: (id: string) => Promise<Teacher | null>;
+  fetchTeacherByIdForHod: (id: string) => Promise<Teacher | null>;
   createTeacher: (data: FormData) => Promise<void>; // Add this
   updateTeacher: (
     id: string,
@@ -150,12 +152,68 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
     }
   },
 
+  fetchTeachersForHod: async (params?: Partial<FilterParams>) => {
+    const currentFilters = get().filters;
+    const newFilters = { ...currentFilters, ...params };
+
+    set({ isFetching: true, filters: newFilters });
+
+    try {
+      // Build query params
+      const queryParams = new URLSearchParams();
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== "" && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+
+      const response = await axiosInstance.get<TeachersResponse>(
+        `/hod/teachers?${queryParams.toString()}`
+      );
+
+      if (response.data.success) {
+        set({
+          teachers: response.data.data,
+          departments: response.data.data_setup.departments,
+          meta: response.data.meta,
+          error: null,
+        });
+      } else {
+        throw new Error(response.data.message || "Failed to fetch teachers");
+      }
+    } catch (error: any) {
+      console.error("Error fetching teachers:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to load teachers";
+      set({ error: errorMessage });
+      toast.error(errorMessage);
+    } finally {
+      set({ isFetching: false });
+    }
+  },
+
   // Fetch single teacher
   fetchTeacherById: async (id: string) => {
     set({ isLoading: true });
     try {
       const response = await axiosInstance.get<{ data: Teacher }>(
         `/admin/teachers/${id}`
+      );
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Error fetching teacher:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch teacher");
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  fetchTeacherByIdForHod: async (id: string) => {
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.get<{ data: Teacher }>(
+        `/hod/teachers/${id}`
       );
       return response.data.data;
     } catch (error: any) {
