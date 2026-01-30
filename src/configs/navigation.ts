@@ -46,6 +46,9 @@ const HODDashboard = lazy(() => import("../pages/p3-hod/HODDashboard"));
 const HodStaff = lazy(() => import("../pages/p3-hod/HodStaff"));
 const HodReports = lazy(() => import("../pages/p3-hod/HodReports"));
 
+const HodTeacher = lazy(() => import("../pages/p3-hod/h1-teachers/HodTeachers"));
+const HodStudent = lazy(() => import("../pages/p3-hod/h2-students/HodStudents"));
+
 const TeacherDashboard = lazy(
   () => import("../pages/p4-teacher/TeacherDashboard"),
 );
@@ -53,6 +56,7 @@ const TeacherAttendance = lazy(
   () => import("../pages/p4-teacher/TeacherAttendance"),
 );
 const TeacherCourses = lazy(() => import("../pages/p4-teacher/TeacherCourses"));
+const TeacherStudents = lazy(() => import("../pages/p4-teacher/p2-students/TeacherStudents"));
 
 const StudentDashboard = lazy(
   () => import("../pages/p5-student/StudentDashboard"),
@@ -186,18 +190,39 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       component: HODDashboard,
     },
     {
-      path: "/hod/staff",
+      path: "/hod/teacher",
       icon: Users,
-      label: "Staff Management",
+      label: "Teachers",
       roles: ["HEAD_OF_DEPARTMENT"],
-      component: HodStaff,
+      component: HodTeacher,
     },
     {
-      path: "/hod/reports",
-      icon: BarChart,
-      label: "Department Reports",
+      path: "/hod/student",
+      icon: Users,
+      label: "Students",
       roles: ["HEAD_OF_DEPARTMENT"],
-      component: HodReports,
+      component: HodStudent,
+    },
+    // {
+    //   path: "/hod/staff",
+    //   icon: Users,
+    //   label: "Staff Management",
+    //   roles: ["HEAD_OF_DEPARTMENT"],
+    //   component: HodStaff,
+    // },
+    // {
+    //   path: "/hod/reports",
+    //   icon: BarChart,
+    //   label: "Department Reports",
+    //   roles: ["HEAD_OF_DEPARTMENT"],
+    //   component: HodReports,
+    // },
+    {
+      path: "/hod/schedules",
+      icon: Calendar,
+      label: "Schedule",
+      roles: ["HEAD_OF_DEPARTMENT"],
+      component: HODSchedules,
     },
     {
       path: "/hod/profile",
@@ -205,13 +230,6 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "Profile",
       roles: ["HEAD_OF_DEPARTMENT"],
       component: HodProfile,
-    },
-    {
-      path: "/hod/schedules",
-      icon: Calendar,
-      label: "Schedule",
-      roles: ["HEAD_OF_DEPARTMENT"],
-      component: HODSchedules,
     },
   ],
 
@@ -236,6 +254,13 @@ export const routeConfigs: Record<string, RouteConfig[]> = {
       label: "My Courses",
       roles: ["TEACHER"],
       component: TeacherCourses,
+    },
+    {
+      path: "/teacher/students",
+      icon: Users,
+      label: "My Students",
+      roles: ["TEACHER"],
+      component: TeacherStudents,
     },
     {
       path: "/teacher/profile",
